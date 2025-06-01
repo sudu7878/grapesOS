@@ -1,5 +1,6 @@
 # grapesOS
 grapesOS is a CLI operating system, designed to run on Raspberry Pi in ARM assembly mode.
+
 Here are a few things about this OS:
 =1= This OS will support CLI, and I'll be trying GUI later.
 =2= This OS will have a modular based system that runs CLI commands under the GUI.
