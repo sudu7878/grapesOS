@@ -1,0 +1,26 @@
+TARGET = bgudakrnl.elf
+BIN = bgudakrnl.bin
+
+AS = arm-none-eabi-as
+CC = arm-none-eabi-gcc
+LD = arm-none-eabi-ld
+OBJCOPY = arm-none-eabi-objcopy
+
+CFLAGS = -Wall -ffreestanding -nostdlib -nostartfiles -Iinclude -marm
+
+all: $(BIN)
+
+boot.o: src/boot.s
+	$(AS) -o boot.o src/boot.s
+
+bgudakrnl.o: src/bgudakrnl.c
+	$(CC) $(CFLAGS) -c -o bgudakrnl.o src/bgudakrnl.c
+
+$(TARGET): boot.o bgudakrnl.o
+	$(LD) -T linker/link.ld -o $(TARGET) boot.o bgudakrnl.o
+
+$(BIN): $(TARGET)
+	$(OBJCOPY) -O binary $(TARGET) $(BIN)
+
+clean:
+	del *.o *.elf *.bin
