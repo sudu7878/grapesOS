@@ -1,26 +1,44 @@
-TARGET = bgudakrnl.elf
-BIN = bgudakrnl.bin
+# path thingy
+SRC = src
+BUILD = Builds/TestBuilds
+LINKER = linker/link.ld
+INCLUDE = include
 
-AS = arm-none-eabi-as
+# tools
 CC = arm-none-eabi-gcc
+AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 
-CFLAGS = -Wall -ffreestanding -nostdlib -nostartfiles -Iinclude -marm
+# targets
+KERNEL_ELF = $(BUILD)/kernel.elf
+KERNEL_IMG = $(BUILD)/kernel.img
+C_SOURCES = $(SRC)/bgudakrnl.c
+ASM_SOURCES = $(SRC)/boot.s
 
-all: $(BIN)
+# default builds
+all: $(KERNEL_IMG)
 
-boot.o: src/boot.s
-	$(AS) -o boot.o src/boot.s
+# redundency
+$(BUILD):
+	mkdir -p $(BUILD)
 
-bgudakrnl.o: src/bgudakrnl.c
-	$(CC) $(CFLAGS) -c -o bgudakrnl.o src/bgudakrnl.c
+# assembly stuff
+$(BUILD)/boot.o: $(ASM_SOURCES) | $(BUILD)
+	$(AS) -o $@ $<
 
-$(TARGET): boot.o bgudakrnl.o
-	$(LD) -T linker/link.ld -o $(TARGET) boot.o bgudakrnl.o
+# c stuff
+$(BUILD)/bgudakrnl.o: $(C_SOURCES) | $(BUILD)
+	$(CC) -c -mcpu=arm1176jzf-s -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
-$(BIN): $(TARGET)
-	$(OBJCOPY) -O binary $(TARGET) $(BIN)
+# link elf-ing
+$(KERNEL_ELF): $(BUILD)/boot.o $(BUILD)/bgudakrnl.o
+	$(LD) -T $(LINKER) -o $@ $^
 
+# img-ing
+$(KERNEL_IMG): $(KERNEL_ELF)
+	$(OBJCOPY) $< -O binary $@
+
+#cleanup
 clean:
-	del *.o *.elf *.bin
+	rm -rf $(BUILD)/*.o $(BUILD)/*.elf $(BUILD)/*.img
