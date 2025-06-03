@@ -13,4 +13,8 @@ Here are a few things about this OS:
 (Also, if any of you guyes are interested in my struggles and joys in developing this project, check out my blog (ill update a link soon here), with each git commit, I'll add a blog of what I did and what I tried to do, and what went wrong, and what ate my brain, and bblah blah blah.)
 
 
+NOTE THAT THE OS CURRENTLY TUNS ON 32 BIT MODE (im gonna change it, but im gonna be let it this way for now.)
+
+
+
 That's all for what i have in my mind about this OS for now. I'll add more as I continue to work on this project, this is just a hobby prpject to explore how the computers actually work under the hood. It's a gread opportunity! If you would like to help me develop, or have some recommendatiosn, please feel free to contact me and help me do it! My discord ID is: sudu_493412. Thank you! Cheers.
