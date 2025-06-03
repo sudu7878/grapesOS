@@ -4,7 +4,7 @@ SECTIONS {
     . = 0x10000;
 
     .boot . : {
-        boot.o(.text)
+        *(.text)
     }
 
     .text : {

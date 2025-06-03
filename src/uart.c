@@ -6,7 +6,7 @@
 #define UART0DR ((volatile unsigned int *)0x101f1000) // UART0 Data Register in ARM architecture (raspberry pi)
 
 
-//main uart functions
+//main uart modular functions
 
 
 void uart_send_char(char c){    //thsi shit here returns the characters
