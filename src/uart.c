@@ -2,12 +2,20 @@
 
 //this stuff is for the uart driver, and we would be mostly using it for debugging purposes.
 
+#include "gpio.h"
+#include "peripherals/gpio_hedr.h"
+#include "common.h"
+#include "peripherals/auxillary.h"
 
-#define UART0DR ((volatile unsigned int *)0x101f1000) // UART0 Data Register in ARM architecture (raspberry pi)
+#define UART0DR ((volatile unsigned int *)0x9000000) // UART0 Data Register in ARM architecture (raspberry pi)
 
 
 //main uart modular functions
 
+#define TXD 14  //set the TX UART pin 
+#define RXD 15  //set the RX UART pin
+
+// UART functions to send data, and this thing here sends single character per data cycle.
 
 void uart_send_char(char c){    //thsi shit here returns the characters
     *UART0DR = (unsigned int)c;
@@ -41,5 +49,38 @@ void uart_send_int(int num) {
     while (i--){
         uart_send_char(buffer[i]);
     }
+}
 
+
+void uart_init() {
+    gpio_pin_set_func(TXD, GFAlt5); // Set TXD pin 
+    gpio_pin_set_func(RXD, GFAlt5); // Set RXD pin 
+
+
+    gpio_pin_enable(TXD);           // Enable TXD pin
+    gpio_pin_enable(RXD);           // Enable RXD pin
+
+    REGS_AUX->enables = 1;
+    REGS_AUX->mu_control = 0;
+    REGS_AUX->mu_ier = 0;
+    REGS_AUX->mu_lcr = 3;
+    REGS_AUX->mu_mcr = 0;
+
+    #if RPI_VERSION == 3
+        REGS_AUX->mu_baud_rate = 270; // Set baud rate for Raspberry Pi 3, so its like 115200  @250 MHz
+    #elif RPI_VERSION == 4
+        REGS_AUX->mu_baud_rate = 541; // Set baud rate for Raspberry Pi 4, so its like 115200 @250Mhz
+    #endif
+        REGS_AUX->mu_control = 3; // Enable transmitter and receiver
+
+        uart_send_char('\n'); // Send a newline character to indicate uart initialization
+        uart_send_string("UART initialized successfully!\n"); // Send a confirmation message
+}
+
+
+//UART fucntion to recieve data
+
+char uart_recv(){
+    while(!(REGS_AUX->mu_lsr & 1));
+    return REGS_AUX->mu_io & 0xFF;
 }

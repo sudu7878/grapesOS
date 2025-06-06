@@ -5,10 +5,10 @@ LINKER = link.ld
 INCLUDE = include
 
 # tools
-CC = arm-none-eabi-gcc #for compiling C code
-AS = arm-none-eabi-as #for assembling assembly code
-LD = arm-none-eabi-ld #for linking object files
-OBJCOPY = arm-none-eabi-objcopy # for converting ELF to binary
+CC = aarch64-none-elf-gcc #for compiling C code
+AS = aarch64-none-elf-as #for assembling assembly code
+LD = aarch64-none-elf-ld #for linking object files
+OBJCOPY = aarch64-none-elf-objcopy # for converting ELF to binary
 
 # targets
 C_SOURCES = $(SRC)/bgudakrnl.c
@@ -32,8 +32,7 @@ $(BUILD)/boot.o: $(ASM_SOURCES) | $(BUILD)
 
 # c stuff
 $(BUILD)/bgudakrnl.o: $(C_SOURCES) | $(BUILD)
-	$(CC) -c -mcpu=arm1176jzf-s -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
-
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 # img-ing
 $(BGUDAKRNL_IMG): $(BGUDAKRNL_ELF)
