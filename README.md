@@ -9,12 +9,10 @@ Here are a few things about this OS:
 =5= Note that im still trying with different CPU scheduling algos and might end up using all/one of them, and system may be unresponsive.
 =6= I'll be trying to implement formatting options for FAT32, and read/write/delete files from the supported disk interface.
 =7= Once the OS is stable in its raw form, I would then try to build different functional modules like an API that may be used by other applications running on this system (even though none of them are present rn).
+=8= I just wrote the GPIO drivers, and I gotta have to test them first.
+=9= This OS will be slowly taking turn to become and embedded system, a small, lightweight software that would support APIs and stuff, which may make it more power efficient and powerful (atleast thats the plan)
 
 (Also, if any of you guyes are interested in my struggles and joys in developing this project, check out my blog (ill update a link soon here), with each git commit, I'll add a blog of what I did and what I tried to do, and what went wrong, and what ate my brain, and bblah blah blah.)
-
-
-NOTE THAT THE OS CURRENTLY TUNS ON 32 BIT MODE (im gonna change it, but im gonna be let it this way for now.)
-
 
 
 That's all for what i have in my mind about this OS for now. I'll add more as I continue to work on this project, this is just a hobby prpject to explore how the computers actually work under the hood. It's a gread opportunity! If you would like to help me develop, or have some recommendatiosn, please feel free to contact me and help me do it! My discord ID is: sudu_493412. Thank you! Cheers.
