@@ -3,11 +3,12 @@
 //gpio controller
 
 #include "peripherals/gpio_hedr.h"
-#include "include/gpio.h"
+#include "gpio.h"
+#include "utils.h"
 #include "common.h"
 
 
-void gpio_pin_set_func(u8 port, u8 pinNumber, GpioFunc func) {
+void gpio_pin_set_func(u8 pinNumber, GpioFunc func) {
     u8 bitStart = (pinNumber * 3) % 30;
     u8 reg = pinNumber / 10;
 

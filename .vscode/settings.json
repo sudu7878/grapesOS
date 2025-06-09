@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "auxillary.h": "c",
+        "stddef.h": "c",
+        "gpio.h": "c",
+        "common.h": "c",
+        "gpio_hedr.h": "c",
+        "uart.h": "c"
+    }
+}

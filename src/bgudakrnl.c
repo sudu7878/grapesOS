@@ -4,7 +4,8 @@
 
 #include "bgudakrnl.h"
 #include <stdint.h>
-#include "uart.c"
+#include "peripherals/uart.h"
+#include "peripherals/gpio_hedr.h"
 #include <stddef.h>
 
 /* 
@@ -45,6 +46,7 @@ void kernel_main() {
 
     uart_send_string("Hello, World!\n");
     uart_send_string("This is the BAGUDA kernel, now running in 64 bit mode!\n");
+    
 
     while(1){}  //the infinite loop to keep the kernel running
     

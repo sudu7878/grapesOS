@@ -1,4 +1,4 @@
-// include/gpio_hedr.h
+// include/peripherals/gpio_hedr.h
 
 //just addressing some GPIO registers in CPU, so we can control them ahhh!
 

@@ -5,15 +5,12 @@
 #include "gpio.h"
 #include "peripherals/gpio_hedr.h"
 #include "common.h"
+#include "peripherals/uart.h"
 #include "peripherals/auxillary.h"
 
-#define UART0DR ((volatile unsigned int *)0x9000000) // UART0 Data Register in ARM architecture (raspberry pi)
 
+//MAIN MODULAR FUNCTIONS
 
-//main uart modular functions
-
-#define TXD 14  //set the TX UART pin 
-#define RXD 15  //set the RX UART pin
 
 // UART functions to send data, and this thing here sends single character per data cycle.
 
@@ -41,8 +38,8 @@ void uart_send_int(int num) {
         num = -num;
     }
 
-    if (num > 0) {
-        buffer[i++] = (num % 10) + '0';     //getting the last digit as the character bruh
+    while (num > 0) {
+        buffer[i++] = (num % 10) + '0';
         num /= 10;
     }
 
@@ -51,6 +48,8 @@ void uart_send_int(int num) {
     }
 }
 
+
+// initialize driver
 
 void uart_init() {
     gpio_pin_set_func(TXD, GFAlt5); // Set TXD pin 
@@ -76,6 +75,7 @@ void uart_init() {
         uart_send_char('\n'); // Send a newline character to indicate uart initialization
         uart_send_string("UART initialized successfully!\n"); // Send a confirmation message
 }
+
 
 
 //UART fucntion to recieve data

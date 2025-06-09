@@ -6,6 +6,12 @@
 
 .section .text
 .global _start
+
+//setting this stuff so that linker doesnt freak out
+.extern __bss_start
+.extern __bss_end
+
+
 _start:
     //boot code starts here, yayyyy (sorry lol i got too excited)
     mrs x0, mpidr_el1   // get the MPIDR register value from the cpu, to know whcih core are we talking to
@@ -13,9 +19,10 @@ _start:
     cbz x0, master      // if this thing is 0, this is the master cpu, jump to master, and if its not then it just hangs the cpu
     b proc_hang
 
+
 master:
-    adr x0, bss_begin   // load the address of the bss section
-    adr x1, bss_end     // load the address of the end of the bss section
+    adr x0, __bss_start   // load the address of the bss section
+    adr x1, __bss_end     // load the address of the end of the bss section
     sub x1, x1, x0      // calculate the size of the bss section
     bl memzero          // zeroes out the bss section
 

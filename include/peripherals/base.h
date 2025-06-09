@@ -1,4 +1,4 @@
-//include/base.h
+//include/peripherals/base.h
 
 #pragma once
 
