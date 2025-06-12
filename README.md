@@ -1,5 +1,5 @@
 <p align = "center">
-  <img src = "Media\Logo\Outputs\WithText\DarkModeVariant\grapesOS_logo_d_png.png" width ="200" alt="grapesOS logo">
+  <img src = "Media\Logo\Outputs\WithText\DarkModeVariant\grapesOS_logo_d_png.png" width ="270" alt="grapesOS logo">
 </p>
 
 <h1 align="center">grapesOS is a CLI operating system, designed to run on Raspberry Pi in ARM assembly mode.</h1>
