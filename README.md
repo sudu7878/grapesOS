@@ -2,7 +2,7 @@
   <img src = "Media\Logo\Outputs\WithText\DarkModeVariant\grapesOS_logo_d_png.png" width ="270" alt="grapesOS logo">
 </p>
 
-<h2 align="center">A CLI-based Operating System, designed to run on Raspberry Pi.</h2>
+<h2 align="center">A CLI-based Operating System, designed to run on Raspberry Pi</h2>
 
 
 <p>grapesOS is a lightweight, CLI-based operating system designed to run on Raspberry Pi 3 and 4 using ARM bare-metal assembly. The current focus is on building a command-line interface, though GUI support might be explored later. It features a modular architecture where CLI commands can be run under a potential GUI layer. Multimedia support and other complex subsystems are being skipped for now due to their complexity.</p>
