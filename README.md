@@ -11,6 +11,6 @@
 
 <p>Once the base system is stable, I plan to build reusable API-like modules, which could be used by other apps. So far, GPIO drivers have been implemented (still need testing!), and UART/IRQ handling is functional. Long-term, grapesOS aims to become a small, efficient, API-supportive embedded OS that balances performance and power.</p>
 
-<p>If you're interested in the story behind this OS, check out my blog (link soon!)—where I’ll post updates on each commit, my thought process, struggles, experiments, and whatever fried my brain that day. It’s raw, real, and fun!</p>
+<p>If you're interested in the story behind this OS, check out my blog (link soon!)—where I’ll post updates on each commit, my thought process, struggles, experiments, and whatever fried my brain that day.</p>
 
 <p>Finally, this is purely a passion project to explore how computers truly work under the hood. It’s been an amazing journey so far, and I hope to keep growing it. If you’d like to contribute, ask questions, or just say hi, my Discord is: sudu_493412. Thanks for reading, and cheers!</p>
