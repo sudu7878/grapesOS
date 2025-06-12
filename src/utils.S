@@ -19,3 +19,9 @@ put_32:
 get_32:
     ldr w0, [x0]    // load that saved address from x0 into w0
     ret
+
+.global get_el
+get_el:
+    mrs x0, CurrentEL
+    lsr x0, x0, #2
+    ret

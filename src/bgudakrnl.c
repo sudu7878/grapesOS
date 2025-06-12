@@ -7,6 +7,11 @@
 #include "peripherals/uart.h"
 #include "peripherals/gpio_hedr.h"
 #include <stddef.h>
+#include "printf.h"
+#include "irq.h"
+#include "peripherals/irq_hedr.h"
+
+
 
 /* 
 size_t detect_memory(){         //this thing here tries to detect memory by following a simple loop.
@@ -42,11 +47,25 @@ So, im gonna just disable this function for now, and when i have the MMU ready, 
 
 */
 
-void kernel_main() {
+u32 get_el();   //gets exception level
 
-    uart_send_string("Hello, World!\n");
-    uart_send_string("This is the BAGUDA kernel, now running in 64 bit mode!\n");
-    
+void putc(void *p, char c) {
+    if (c == '\n') {
+        uart_send('\r');
+    }
+    uart_send(c);
+}
+
+void kernel_main() {
+    uart_init();
+    init_printf(0, putc);
+    printf("Hello, from Baguda Kernel, grapesOS! This system is now running in 64 bit mode.");
+
+    irq_init_vectors();
+    enable_interrupt_controller();
+    irq_enable();
+
+    printf("\nException Level: %d\n", get_el());
 
     while(1){}  //the infinite loop to keep the kernel running
     

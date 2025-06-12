@@ -17,14 +17,14 @@
 
 //(also i defined it here because it just makes it so much easier to use it everywhere around the proejct)
 
-//a way to debug stuff for the kernel
+//a way to debug stuff for the kernel using the UART interface
 
 
-void uart_send_char(char c);    //thsi thing here returns the characters
+void uart_send(char c);                     //thsi thing here returns the characters
 
-void uart_send_string(const char *str); //this thing here returns strings, USING the characters (jugaad)
-    
-void uart_send_int(int num); //handle number stuff
+void uart_send_string(char *str);     //this thing here returns strings, USING the characters
+
+void uart_send_int(int num);                //handle number stuff
 
 
 

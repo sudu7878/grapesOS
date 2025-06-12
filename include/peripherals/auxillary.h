@@ -1,5 +1,7 @@
 //include/peripherals/base.h
 
+/* just some standard helper registers that can be set for a particular parent function*/
+
 #pragma once
 
 #include "base.h"
