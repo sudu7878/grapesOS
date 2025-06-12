@@ -2,7 +2,7 @@
   <img src = "Media\Logo\Outputs\WithText\DarkModeVariant\grapesOS_logo_d_png.png" width ="270" alt="grapesOS logo">
 </p>
 
-<h2 align="center">grapesOS is a CLI operating system, designed to run on Raspberry Pi in ARM assembly mode.</h2>
+<h2 align="center">grapesOS is a CLI-based Operating System, designed to run on Raspberry Pi 3 and 4.</h2>
 
 
 
