@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 4096 4096">
+  <defs>
+    <style>
+      .cls-1 {
+        filter: url(#drop-shadow-8);
+      }
+
+      .cls-1, .cls-2 {
+        fill: #7fb400;
+      }
+
+      .cls-3, .cls-4 {
+        fill: #0c9400;
+      }
+
+      .cls-5 {
+        filter: url(#drop-shadow-2);
+      }
+
+      .cls-5, .cls-6 {
+        fill: #cbff0a;
+      }
+
+      .cls-2 {
+        filter: url(#drop-shadow-7);
+      }
+
+      .cls-7, .cls-8, .cls-9 {
+        fill: #5ac900;
+      }
+
+      .cls-6 {
+        filter: url(#drop-shadow-1);
+      }
+
+      .cls-10 {
+        filter: url(#drop-shadow-5);
+      }
+
+      .cls-10, .cls-11 {
+        fill: #34aa00;
+      }
+
+      .cls-8 {
+        filter: url(#drop-shadow-3);
+      }
+
+      .cls-4 {
+        filter: url(#drop-shadow-6);
+      }
+
+      .cls-9 {
+        filter: url(#drop-shadow-4);
+      }
+    </style>
+    <filter id="drop-shadow-1" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-2" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-2" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-2" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-3" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-3" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-3" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-4" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-4" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-4" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-5" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-5" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-5" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-6" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-6" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-6" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-7" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-7" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-7" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="drop-shadow-8" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1" dy="7"/>
+      <feGaussianBlur result="blur-8" stdDeviation="19"/>
+      <feFlood flood-color="#000" flood-opacity=".27"/>
+      <feComposite in2="blur-8" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <circle class="cls-6" cx="1368.75" cy="1320.62" r="547.02"/>
+  <circle class="cls-5" cx="2102.04" cy="2685.58" r="547.02"/>
+  <circle class="cls-8" cx="2335.64" cy="1707.14" r="547.02"/>
+  <circle class="cls-7" cx="3211.71" cy="2885.85" r="547.02"/>
+  <circle class="cls-9" cx="828.68" cy="1899.92" r="547.02"/>
+  <circle class="cls-10" cx="1839.24" cy="1061.7" r="547.02"/>
+  <circle class="cls-11" cx="2988.57" cy="1963.08" r="547.02"/>
+  <circle class="cls-4" cx="2576.99" cy="2530.62" r="547.02"/>
+  <circle class="cls-3" cx="1277.87" cy="2491" r="547.02"/>
+  <circle class="cls-2" cx="1809.92" cy="1956.09" r="547.02"/>
+  <circle class="cls-1" cx="3351.8" cy="2395.38" r="547.02"/>
+</svg>
