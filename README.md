@@ -5,19 +5,12 @@
 <h2 align="center">grapesOS is a CLI-based Operating System, designed to run on Raspberry Pi 3 and 4.</h2>
 
 
+<p>grapesOS is a lightweight, CLI-based operating system designed to run on Raspberry Pi using ARM assembly. The current focus is on building a command-line interface, though GUI support might be explored later. It features a modular architecture where CLI commands can be run under a potential GUI layer. Multimedia support and other complex subsystems are being skipped for now due to their complexity.</p>
 
-Here are a few things about this OS:
-=1= This OS will support CLI, and I'll be trying GUI later.
-=2= This OS will have a modular based system that runs CLI commands under the GUI.
-=3= Multimedia and other things would not be supported for the time being, because they are difficult to implement (yeah sorry).
-=4= This OS is specifically designed to run on Raspberry Pi infrastructure, where the system boots up by reffering to GPU.
-=5= Note that im still trying with different CPU scheduling algos and might end up using all/one of them, and system may be unresponsive.
-=6= I'll be trying to implement formatting options for FAT32, and read/write/delete files from the supported disk interface.
-=7= Once the OS is stable in its raw form, I would then try to build different functional modules like an API that may be used by other applications running on this system (even though none of them are present rn).
-=8= I just wrote the GPIO drivers, and I gotta have to test them first.
-=9= This OS will be slowly taking turn to become and embedded system, a small, lightweight software that would support APIs and stuff, which may make it more power efficient and powerful (atleast thats the plan)
+<p>This OS is tailored for bare-metal Raspberry Pi hardware and bypasses the GPU on boot. I'm currently experimenting with different CPU scheduling algorithms, though many are resource-heavy and may cause unresponsiveness. A major upcoming feature is file system interaction: implementing FAT32 support, enabling read/write/delete operations through a disk interface.</p>
 
-(Also, if any of you guyes are interested in my struggles and joys in developing this project, check out my blog (ill update a link soon here), with each git commit, I'll add a blog of what I did and what I tried to do, and what went wrong, and what ate my brain, and bblah blah blah.)
+<p>Once the base system is stable, I plan to build reusable API-like modules, which could be used by other apps. So far, GPIO drivers have been implemented (still need testing!), and UART/IRQ handling is functional. Long-term, grapesOS aims to become a small, efficient, API-supportive embedded OS that balances performance and power.</p>
 
+<p>If you're interested in the story behind this OS, check out my blog (link soon!)—where I’ll post updates on each commit, my thought process, struggles, experiments, and whatever fried my brain that day. It’s raw, real, and fun!</p>
 
-That's all for what i have in my mind about this OS for now. I'll add more as I continue to work on this project, this is just a hobby prpject to explore how the computers actually work under the hood. It's a gread opportunity! If you would like to help me develop, or have some recommendatiosn, please feel free to contact me and help me do it! My discord ID is: sudu_493412. Thank you! Cheers.
+<p>Finally, this is purely a passion project to explore how computers truly work under the hood. It’s been an amazing journey so far, and I hope to keep growing it. If you’d like to contribute, ask questions, or just say hi, my Discord is: sudu_493412. Thanks for reading, and cheers!</p>
