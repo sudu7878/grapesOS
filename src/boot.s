@@ -45,6 +45,11 @@ el1_entry:
     sub x1, x1, x0          // calculate the size of the bss section
     bl memzero              // zeroes out the bss section
 
+    ldr x0, =0x3f215040  // AUX_MU_IO_REG on RPi3
+    mov x1, #'H'
+    str x1, [x0]
+
+
     ldr x1, =LOW_MEMORY
     mov sp, x1              // just did that round process cuz the stupid compiler doesnt understand #LOW_MEMORY even though i mentioned it in the header.
     bl kernel_main          // intiialize the kernel code

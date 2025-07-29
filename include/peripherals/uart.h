@@ -1,5 +1,7 @@
 // include/peripherals/uart.h
 
+//*Mini UART is a inteface in pi that is the derivation of the main UART or PL011 UART. This thing is used by bluetooth module by default, plus its much more advanced and difficult to set up, so I used mini uart instead.
+
 
 #pragma once
 
@@ -24,7 +26,7 @@ void uart_send(char c);                     //thsi thing here returns the charac
 
 void uart_send_string(char *str);     //this thing here returns strings, USING the characters
 
-void uart_send_int(int num);                //handle number stuff
+void uart_send_int(int num);                //this thing here returns integers
 
 
 

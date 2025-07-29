@@ -1,64 +1,40 @@
 // src/bgudakrnl.c
 
-//This is the main kernel file for the BAGUDA kernel.
+//This is the Baguda Kernel source
 
 #include "bgudakrnl.h"
 #include <stdint.h>
 #include "peripherals/uart.h"
 #include "peripherals/gpio_hedr.h"
+#include "gpio.h"
 #include <stddef.h>
 #include "printf.h"
+#include "utils.h"
 #include "irq.h"
+#include "peripherals/timer.h"
 #include "peripherals/irq_hedr.h"
 
 
+//u32 get_el();   //gets exception level
 
-/* 
-size_t detect_memory(){         //this thing here tries to detect memory by following a simple loop.
-    volatile uint32_t *addr;
-    size_t step = 1024*1024;     //converting bytes to MB
-    size_t max_size = 0;
-
-    for (size_t i = 0x40000000; i < 0x80000000; i += step) {        //currently assuming the memory starts at 1GB and goes up to 2GB
-        addr = (volatile uint32_t *)i;
-        
-        uint32_t old = *addr;
-        *addr = 0xDEADBEEF;
-
-        if (*addr == 0xDEADBEEF) {
-            *addr = old;
-            max_size += step;
-        }
-        else{
-            break;
-        }
-
-    }
-
-    return max_size;
-
-}
-
-ERROR: This thing doesnt work here, because memory detection is failing. The reason why its happening because we have not yet 
-setup the memory management unit (MMU) and the memory map is not yet established. So if i run this piece of code, it would just
-cause a segmentation fault or whaetever memory access violation error, and the kernel would freak out (crash).
-
-So, im gonna just disable this function for now, and when i have the MMU ready, ill enable it. 
-
-*/
-
-u32 get_el();   //gets exception level
-
-void putc(void *p, char c) {
+/*void putc(void *p, char c) {
     if (c == '\n') {
         uart_send('\r');
     }
     uart_send(c);
-}
+}*/
 
-void kernel_main() {
+/*void kernel_main() {
     uart_init();
     init_printf(0, putc);
+    
+    uart_send_string("UART online!\n");
+    gpio_pin_set_func(17, GFOutput);
+
+    while(2){               //this thing signifies that the system booted and has initialized UART.
+        gpio_pin_enable(17);
+        delay(500);
+    }
     printf("Hello, from Baguda Kernel, grapesOS! This system is now running in 64 bit mode.");
 
     irq_init_vectors();
@@ -67,6 +43,18 @@ void kernel_main() {
 
     printf("\nException Level: %d\n", get_el());
 
-    while(1){}  //the infinite loop to keep the kernel running
+    while(1){
+        char c = uart_recv();  //receive a character from UART
+        uart_send(c);          //echo the character back
+    }  //the infinite loop to keep the kernel running
     
+}
+*/
+void kernel_main() {
+    uart_init();
+    uart_send_string("Hello world! \n");
+
+    while(1){
+        uart_send(uart_recv());
+    }
 }

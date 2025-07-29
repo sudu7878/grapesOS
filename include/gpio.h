@@ -19,4 +19,9 @@ typedef enum GpioFunc{
 void gpio_pin_set_func(u8 pinNumber, GpioFunc func);
 
 void gpio_pin_enable(u8 pinNumber);
+void gpio_pin_disable(u8 pinNumber);
+
+//LED indication drivers
+
+
 

@@ -1,0 +1,17 @@
+arm_64bit=1
+armstub=armstub-new.bin
+disable_commandline_tags=1
+uart_2ndstage=1
+dtoverlay=miniuart-bt
+kernel_old=1
+
+[pi3]
+enable_uart=0
+core_freq=250
+
+[pi4]
+dtoverlay=vc4-fkms-v3d
+gpu_mem=256
+kernel=kernel8-rpi4.img
+core_freq_min=500
+disable_l2cache=0

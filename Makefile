@@ -30,8 +30,8 @@ OBJCOPY = aarch64-none-elf-objcopy
 # targets
 C_SOURCES = $(SRC)/bgudakrnl.c $(SRC)/gpio.c $(SRC)/uart.c
 ASM_SOURCES = $(SRC)/boot.S $(SRC)/mem_mang.S $(SRC)/utils.S $(SRC)/entry.S $(ARMSTUB_SRC)/armstub.S
-BGUDAKRNL_ELF = $(BUILD)/bgudakrnl.elf
-BGUDAKRNL_IMG = $(BUILD)/bgudakrnl.img
+BGUDAKRNL_ELF = $(BUILD)/kernel.elf
+BGUDAKRNL_IMG = $(BUILD)/kernel8.img
 
 # build directory
 $(BUILD):

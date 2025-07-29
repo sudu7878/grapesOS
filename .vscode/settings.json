@@ -5,6 +5,8 @@
         "gpio.h": "c",
         "common.h": "c",
         "gpio_hedr.h": "c",
-        "uart.h": "c"
+        "uart.h": "c",
+        "stdint.h": "c",
+        "vcruntime.h": "c"
     }
 }

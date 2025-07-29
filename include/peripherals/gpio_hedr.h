@@ -8,7 +8,7 @@
 
 //intialize GPIO pin data so the code knows what we're accessing.
 struct GpioPinData{
-    reg32 reseved;
+    reg32 reserved;
     reg32 data[2];
 };
 
@@ -30,4 +30,4 @@ struct GpioRegs{
     reg32 pull_up_down_clocks[2];
 };
 
-#define REGS_GPIO ((struct GpioRegs *)(PBASE + 0x00200000)) //the actual logic to access the pointter that accesses it.
+#define REGS_GPIO ((struct GpioRegs *)(PBASE + 0x00200000)) //the actual logic to access the pointer that accesses it.

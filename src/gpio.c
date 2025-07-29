@@ -6,6 +6,7 @@
 #include "gpio.h"
 #include "utils.h"
 #include "common.h"
+#include "peripherals/timer.h"
 
 
 void gpio_pin_set_func(u8 pinNumber, GpioFunc func) {
@@ -28,4 +29,10 @@ void gpio_pin_enable(u8 pinNumber) {
     REGS_GPIO->pull_up_down_enable = 0; // Disable pull-up/down again
     REGS_GPIO->pull_up_down_clocks[pinNumber / 32] = 0; // Disable clock for the pin
 }
+
+void gpio_pin_disable(u8 pinNumber) {
+    REGS_GPIO->pull_up_down_enable = 0; // Disable pull-up/down
+    REGS_GPIO->pull_up_down_clocks[pinNumber / 32] = 0; // Disable clock for the pin
+}
+
 
