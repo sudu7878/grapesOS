@@ -22,6 +22,6 @@ get_32:
 
 .global get_el
 get_el:
-    mrs x0, CurrentEL
-    lsr x0, x0, #2
-    ret
+    mrs x0, CurrentEL       //Read the current exception level into x0
+    lsr x0, x0, #2          //shift right by 2 bits 
+    ret                     //just return the value stored in x0        

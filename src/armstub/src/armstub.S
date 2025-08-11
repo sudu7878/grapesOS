@@ -12,7 +12,7 @@ _start:
 stub_magic:
     .word 0x5AFE570B
 
-.org 0x0F4
+.org 0xF4
 .globl stub_version
 stub_version:
     .word 0
