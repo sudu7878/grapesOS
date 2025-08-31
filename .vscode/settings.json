@@ -19,6 +19,13 @@
         "stop_token": "c",
         "type_traits": "c",
         "xmemory": "c",
-        "xutility": "c"
+        "xutility": "c",
+        "mailbox.h": "c",
+        "stdbool.h": "c",
+        "thread": "c",
+        "xlocale": "c",
+        "utils.h": "c",
+        "irq.h": "c",
+        "timer.h": "c"
     }
 }

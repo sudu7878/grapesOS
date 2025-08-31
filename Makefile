@@ -1,3 +1,5 @@
+# Makefile for grapesOS
+
 # path thingy
 SRC = src
 ARMSTUB = SRC/ARMSTUB
@@ -10,6 +12,7 @@ INCLUDE = include
 #OBJs
 OBJ = \
   $(BUILD)/boot.o \
+  $(BUILD)/mem.o \
   $(BUILD)/mem_mang.o \
   $(BUILD)/utils.o \
   $(BUILD)/entry.o \
@@ -18,7 +21,8 @@ OBJ = \
   $(BUILD)/uart.o \
   $(BUILD)/irq.o \
   $(BUILD)/irq_S.o \
-  $(BUILD)/printf.o
+  $(BUILD)/printf.o \
+  $(BUILD)/mailbox.o
 
 
 # tools
@@ -46,6 +50,9 @@ $(BUILD)/boot.o: $(SRC)/boot.S | $(BUILD)
 
 $(BUILD)/mem_mang.o: $(SRC)/mem_mang.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -I$(INCLUDE)/peripherals -o $@ $<
+
+$(BUILD)/mem.o: $(SRC)/mem.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/utils.o: $(SRC)/utils.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -I$(INCLUDE)/peripherals -o $@ $<
@@ -76,6 +83,8 @@ $(BUILD)/printf.o: $(SRC)/printf.c | $(BUILD)
 $(BUILD)/entry.o: $(SRC)/entry.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
+$(BUILD)/mailbox.o: $(SRC)/mailbox.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 
 # link ELF

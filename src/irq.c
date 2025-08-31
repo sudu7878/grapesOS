@@ -35,7 +35,7 @@ const char entry_error_messages[16][32] = {
 
 
 void show_invalid_entry_message(u32 type, u64 esr, u64 address){
-    printf("ERROR CAUGHT: %s - %d, ESR: %x, Address: %x\n",
+    uart_printf("ERROR CAUGHT: %s - %d, ESR: %x, Address: %x\n",
         entry_error_messages[type], type, esr, address);
 }
 

@@ -17,6 +17,15 @@
 #define TXD 14  //set the TX UART pin 
 #define RXD 15  //set the RX UART pin
 
+//define terminal colors boom boom hacker vibes!
+#define ANSI_RESET      "\033[0m"
+#define ANSI_RED        "\033[31m"
+#define ANSI_GREEN      "\033[32m"
+#define ANSI_YELLOW     "\033[33m"
+#define ANSI_BLUE       "\033[34m"
+#define ANSI_MAGENTA    "\033[35m"
+#define ANSI_CYAN       "\033[36m"
+
 //(also i defined it here because it just makes it so much easier to use it everywhere around the proejct)
 
 //a way to debug stuff for the kernel using the UART interface
@@ -28,6 +37,8 @@ void uart_send_string(char *str);     //this thing here returns strings, USING t
 
 void uart_send_int(int num);                //this thing here returns integers
 
+void uart_send_hex(unsigned int num);       //this thing here returns hexadecimals
+
 
 
 //UART fucntion to recieve data
@@ -37,4 +48,5 @@ char uart_recv(void);
 
 // initialize UART driver
 void uart_init(void);
-   
+
+void uart_printf(const char *fmt, ...);  //formatted print function for uart (like printf in stdio.h)
