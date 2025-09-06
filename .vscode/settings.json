@@ -26,6 +26,7 @@
         "xlocale": "c",
         "utils.h": "c",
         "irq.h": "c",
-        "timer.h": "c"
+        "timer.h": "c",
+        "cachef.h": "c"
     }
 }

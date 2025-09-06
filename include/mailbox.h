@@ -4,41 +4,29 @@
 
 #include "common.h"
 
-typedef struct {
-    u32 id;
-    u32 buffer_size;
-    u32 value_length;
-} mailbox_tag;
+#include <stdint.h>
+#include "peripherals/base.h"
 
-typedef struct {
-    u32 size;
-    void *tag;
-} mailbox_command;
+#ifndef MAILBOX_H
+#define MAILBOX_H
 
-typedef struct {
-    mailbox_tag tag;
-    u32 id;
-    u32 value;
-} mailbox_generic;
+#define MBOX_BASE	(PBASE + 0xB880)
 
-typedef struct{
-    mailbox_tag tag;
-    u32 id;
-    u32 state;
-} mailbox_power;
+//Mailbox Registers (offsets actually)
+#define reg32(addr)	(*(volatile u32*)(addr))
+#define MBOX_READ	reg32(MBOX_BASE + 0x00)
+#define MBOX_STATUS	reg32(MBOX_BASE + 0x18)
+#define MBOX_WRITE	reg32(MBOX_BASE + 0x20)
 
-typedef struct {
-    mailbox_tag tag;
-    u32 rate;
-    u32 id;
-} mailbox_clock;
+//Mailbox status flags
+#define MBOX_EMPTY 0x40000000
+#define MBOX_FULL  0x80000000
 
-typedef enum {
-    CT_EMMC = 1,
-    CT_UART = 2, 
-    CT_ARM = 3, 
-    CT_CORE = 4
-} clock_type;
+//Mailbox Channels
+#define MBOX_CH_PROP	8	//propery channle
+
+
+
 
 #define RPI_POWER_DOMAIN_I2C0		0
 #define RPI_POWER_DOMAIN_I2C1		1
@@ -169,9 +157,24 @@ enum rpi_firmware_property_tag {
 	RPI_FIRMWARE_GET_DMA_CHANNELS =                       0x00060001,
 };
 
-u32 mailbox_clock_rate(clock_type clock);
 
-bool mailbox_generic_command(u32 tag_id, u32 id, u32 *value);
 
-bool mailbox_power_check(u32 type);
+//public functions
+int mbx_write(u32 channel, u32 data);
+int mbx_read(u32 channel);
+u32 mbx_request(u32 tag, u32 value_size, u32 response_size, u32 value);
+u32 mbx_request_u32_no_arg(u32 tag);
+u32 mbx_request_1_arg(u32 tag, u32 arg);
+
+
+typedef struct {
+	u32 tag;
+	u32 size;			//total buffer size: input + output
+	u32 req_code;		// 0 -> reuqest, 1 << 32 -> response
+	u32 data[8];		//upto 8 data fields
+} mbx_tag_t;
+
+int mbx_multi_request(mbx_tag_t *tags, int num_tags);
+
+#endif	//MAILBOX_H
 

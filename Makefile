@@ -12,7 +12,7 @@ INCLUDE = include
 #OBJs
 OBJ = \
   $(BUILD)/boot.o \
-  $(BUILD)/mem.o \
+  $(BUILD)/cacheF.o \
   $(BUILD)/mem_mang.o \
   $(BUILD)/utils.o \
   $(BUILD)/entry.o \
@@ -51,7 +51,7 @@ $(BUILD)/boot.o: $(SRC)/boot.S | $(BUILD)
 $(BUILD)/mem_mang.o: $(SRC)/mem_mang.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -I$(INCLUDE)/peripherals -o $@ $<
 
-$(BUILD)/mem.o: $(SRC)/mem.c | $(BUILD)
+$(BUILD)/cacheF.o: $(SRC)/cacheF.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/utils.o: $(SRC)/utils.S | $(BUILD)

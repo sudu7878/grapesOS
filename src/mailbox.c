@@ -2,39 +2,63 @@
 
 //The mailbox driver API is used to communicate with the VideoCore GPU on the Raspberry Pi.
 
+/*
+    If you wish to understand this code, then you need to look at the GPU as a literal person, and you 
+    as a user asking stuff to it. All of the functions are named in third person view; i.e, mbx_read() 
+    is nothing but YOU reading the value returned by the GPU, not that its a function for GPU to read 
+    stuff, like in traditional sense.
+*/
+
+
+/* Note on how to call the mailbox functions:
+    This script has two main functions: mbx_request() and mbx_multiple_request(). Here's how to use them:
+        1. mbx_request() 
+            This thing has 4 arguments:
+                ->Tag ID is the mailbox tag that you are requesting.
+                ->Value size is the input buffer in bytes.
+                ->Response size is the size of what GPU will be writing back in bytes.
+                ->Value would be the actual input that you're sending to the firmware.
+        
+        2. mbx_multiple_request()
+            This function is mainly used for getting a bunch of stuff in a single message. You need ot define
+            the message array that then this function can fill this in. Then you just call that array for output.
+            This thing has 2 arguments:
+                ->Tags: This one is the array that you defined earlier in your script using mbx_tag_t tags[x] where
+                       x is the number of tags. Each of the tag is then a seperate sub-array which consists of the
+                       same arguments as mbx_request()
+                ->num_tags: This is nothing but the number to tags you define in your parent array.
+            How to call the outputs:
+                Define it like so:
+                    tags[x1].data[y1]
+                    Here x1....xn represents your nth tag in the array.
+                    The y1....yn represents the nth 32 bit word depending on the tag whether it exprects more data.
+                    Be sure to add a placeholder for the return value which the GPU can then overwrite to.
+                    Also note that data[0] is generally input and data[1....n] is generally output, GPU never overwrties
+                    the first word (data[0]).
+
+    Example usecase pseudocode:
+        mbx_tag_t tags[3] = {
+            { RPI_FIRMWARE_GET_TEMPERATURE, 8, 0, {0,0} },          // sensor_id=0, placeholder
+            { RPI_FIRMWARE_GET_BOARD_REVISION, 4, 0, {0} },          // placeholder
+            { RPI_FIRMWARE_ALLOCATE_FRAMEBUFFER, 20, 0, {1920,1080,32,0,0} } // w,h,bpp,etc
+        };
+
+        if (mbx_multi_request(tags, 3) == 0) {
+            print_string("Temp: "); print_decimal(tags[0].data[1]/1000); print_string("C\n");
+            print_string("Board rev: 0x"); print_hexadecimal(tags[1].data[0]); print_string("\n");
+            print_string("Framebuffer base: 0x"); print_hexadecimal(tags[2].data[0]); print_string("\n");
+        }
+                
+*/
+
 #include "mailbox.h"
 #include "peripherals/base.h"
 #include "peripherals/uart.h"
-#include "mem.h"
+#include "cacheF.h"
 #include "common.h"
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct {            //define basic functionality of mailbox registers
-    reg32 read;     //tells where to reaad data from GPU
-    reg32 res[5];   //reserved space
-    reg32 status;   //tells if the mailbox is full or empty
-    reg32 config;   //config register
-    reg32 write;    //tells where to send data to GPU
-} mailbox_regs;
-
-
-static inline mailbox_regs* MBX(){                                //return address pointer to physical mailbox registers
-    return (mailbox_regs*)(PBASE + 0xB880);                       //offsetting the PBASE address to get the mailbox register address.
-}
-
-typedef struct{             //defining our poperty buffer structure
-    u32 size;   //tells the total size of the buffer
-    u32 code;   //indicates whether the it was a request or a response
-    u8 tags[0]; //array of actual tags upon which the request is made.
-} property_buffer;
-
-static u32 property_data[1024] __attribute__((aligned(16)));    //A 4 KB aligned buffer to hold the property data, the aligned 16 bit ensures that the buffer starts at an address that is a multiple of 16 bytes, which is a requirement for the mailbox interface.
-
-//Mailbox status flags. Note that these are constants, meaning it's pre-determined.
-#define MAIL_FULL 0x80000000    
-#define MAIL_EMPTY 0x40000000
-#define MAIL_POLL  0xFFFFFFFF //to check if the mailbox is empty or full
 
 //Mailbox channels. Note that these are constants, meaning it's pre-determined.
 #define MAIL_POWER    0x0 // Mailbox Channel 0: Power Management Interface
@@ -48,92 +72,162 @@ static u32 property_data[1024] __attribute__((aligned(16)));    //A 4 KB aligned
 #define MAIL_TAGS     0x8 // Mailbox Channel 8: Tags (ARM to videocore)
 
 
-static void mailbox_write(u8 channel, uintptr_t data){      //writing data to mailbox tuned to 64 bit address space
-    while (MBX()->status & MAIL_FULL);
-    MBX()->write = (data & 0xFFFFFFF0) | (channel & 0xF); //writing data to mailbox with channel identifier
+
+#if RPI_VERSION >= 4
+    
+    #define ARM_TO_BUS_ADDR(addr) ((addr))
+#else
+    
+    #define ARM_TO_BUS_ADDR(addr) ((addr) + 0xC0000000)
+#endif
+
+static __attribute__((aligned(16))) u32 mbox_buffer[36];     //Making sure that the buffer is aligned to 16 byte.
+
+//static u32 mbx_size = 0;                                    //Defines the total size of the message buffer
+
+extern void clean_data_cache_for_address(void *addr, u32 size);     //CPU is a nice bastard. It keeps the value in its cache which we need to flush in the main memory so videocore can read
+
+
+
+
+//function to write the mailbox code to the mailbox register
+int mbx_write(u32 channel, u32 data){
+
+    
+    if (data & 0xF){
+        uart_printf(ANSI_RED"Mailbox write data is not 16-byte aligned!"ANSI_RESET);
+        return -1;  //Failed; not aligned properly.
+    }
+    int t = 100000;
+    while((MBOX_STATUS & MBOX_FULL) && --t); 
+    if (t <= 0) return -1;
+    MBOX_WRITE = data | (channel & 0xF);   
+    return 0;
 }
 
-static u32 mailbox_read(u8 channel){        //reading data from mailboxx tuned to the 64 bit address space.
-    const u32 timeout = 100000;   //timeout value to prevent infinite loop
-    u32 counter = 0;
 
-    while (true){
-        while(MBX()->status & MAIL_EMPTY) {
-            if (++counter > timeout){
-
-                return 0xFFFFFFFF; //return an error value if timeout occurts
-            }
-        } 
-        //wait until there's data to read
-        u32 data = MBX()->read;
-
-        u8 read_channel = (u8)(data & 0xF);     //extract the channel identifier from the data
-
-        if (read_channel == channel){
-            return data & 0xFFFFFFF0;       //return the data without the channel identifier
+//function to read the mailbox code from the mailbox register.
+int mbx_read(u32 channel){
+    int t = 200000;
+    for (;;){
+        while ((MBOX_STATUS & MBOX_EMPTY) && --t) { }
+        if (t <= 0) return -1;
+        u32 v = MBOX_READ;
+        if ((v & 0xF) == (channel & 0xF)){
+            return (int)(v & ~0xF);         // return the read data by casting it to the standard integer
         }
     }
 }
 
-bool mailbox_process(mailbox_tag *tag, u32 tag_size){       //process a mailbox tag command
-    //clear the property buffer
-    int buffer_size = tag_size + 12;    //12 bytes for size, code, and end tag
-
-    memcpy(&property_data[2], tag, tag_size);  //copy the tag data into the property buffer, starting after the size and code fields
-
-    property_buffer *buff = (property_buffer *)property_data;
-    buff->size = buffer_size;
-    buff->code = RPI_FIRMWARE_STATUS_REQUEST;       //just an indication that this is a request
-
-    property_data[(tag_size + 12) / 4 - 1] = RPI_FIRMWARE_PROPERTY_END; //end tag: so the script knows where to stop reading the property buffer
-
-    mailbox_write(MAIL_TAGS, (uintptr_t)property_data);     //actually write the processed data to the mailbox
-
-    u32 result = mailbox_read(MAIL_TAGS);                                //wait for the response from the GPU by reading from the mailbopx
-    if (result == 0xFFFFFFFF){
-        uart_printf(ANSI_RED " Fatal error: Mailbox crashed! Reason: Invalid read response. The thread crashed with error code: %x\r\n", result);
-        return false;
+static int mbx_wait_response(u32 channel, u32 bus_addr){
+    int tries = 200;
+    while (tries --) {
+        int resp = mbx_read(channel);
+        if (resp < 0) return -1;
+        if((u32)resp == bus_addr) return 0;
     }
-    memcpy(tag, property_data + 2, tag_size);               //copy the response data back into the original tag structure
-    return true;
+    return -1;
 }
 
-bool mailbox_generic_command(u32 tag_id, u32 id, u32 *value){       //genric mailbox command processor
-    mailbox_generic mbx;
-    mbx.tag.id = tag_id;
-    mbx.tag.value_length = 4;
-    mbx.tag.buffer_size = sizeof(mailbox_generic) - sizeof(mailbox_tag);
-    mbx.id = id;
-    mbx.value = *value;
 
-    if (!mailbox_process((mailbox_tag *)&mbx, sizeof(mbx))){
-        uart_send_string(ANSI_RED"Failed to process: Mailbox generic command!\r\n");
-        return false;
+u32 mbx_request(u32 tag, u32 value_size, u32 response_size, u32 value) {
+
+    for (int i = 0; i < 36; i++){
+        mbox_buffer[i] = 0;
     }
 
-    *value = mbx.value;
-    return true;
+    /* Note the following array list:
+        mbox_buffer[0] --> Total message buffer size
+        mbox_buffer[1] --> Status code
+        mbox_buffer[2] --> Tag ID
+        mbox_buffer[3] --> response size
+        mbox_buffer[4] --> Activity code (request/response?)
+        mbox_buffer[5] --> Response value
+    */
+
+    
+    mbox_buffer[2] = tag;
+    mbox_buffer[3] = response_size;
+    mbox_buffer[4] = 0x0; 
+    
+    if (value_size > 0) {
+      mbox_buffer[5] = value;
+    }
+
+    
+    mbox_buffer[5 + (value_size / 4)] = 0;
+
+    mbox_buffer[0] = (5 + (value_size / 4) + 1) * sizeof(u32); 
+    mbox_buffer[1] = 0; 
+
+    clean_data_cache_for_address(mbox_buffer, mbox_buffer[0]);
+
+    u32 bus = ARM_TO_BUS_ADDR((u32)(uintptr_t)mbox_buffer);
+
+    if(mbx_write(MAIL_TAGS, bus) != 0) {
+        uart_printf(ANSI_RED"Failed to write to mailbox.\n" ANSI_RESET);
+        return 0xFFFFFFFF;
+    }
+    if(mbx_wait_response(MAIL_TAGS, bus) != 0) {
+        uart_printf(ANSI_RED"Failed to get mailbox response.\n" ANSI_RESET);
+        return 0xFFFFFFF0;
+    }
+
+    if (mbox_buffer[1] != 0x80000000) {
+        uart_printf(ANSI_RED"Firmware status: 0x%x\n" ANSI_RESET, mbox_buffer[1]);
+        return 0xFFFFFFFF;
+    }
+
+   
+    return mbox_buffer[5];
 }
 
-u32 mailbox_clock_rate(clock_type clock_type) {     //get the clock rate of a specific clock type
-    mailbox_clock c;    
-    c.tag.id = RPI_FIRMWARE_GET_CLOCK_RATE;
-    c.tag.value_length = 0;
-    c.tag.buffer_size = sizeof(c) - sizeof(c.tag);
-    c.id = clock_type;
+int mbx_multi_request(mbx_tag_t *tags, int num_tags) {
+    for (int i = 0; i < 36; i++) {
+        mbox_buffer[i] = 0;
+    }
+     int offset = 2;    //index offset, first two, i.e are: [0]=total size, [1]=status
 
-    mailbox_process((mailbox_tag *)&c, sizeof(c));
-    return c.rate;
-}
+     for(int t = 0; t < num_tags; t++){         //note: numtag is just the count of how many tags we sending in a mbx msg
+        mbox_buffer[offset++] = tags[t].tag;        
+        mbox_buffer[offset++] = tags[t].size;       
+        mbox_buffer[offset++] = tags[t].req_code;   
 
-bool mailbox_power_check(u32 type){     //check the power state of a specific power domain
-    mailbox_power p;
-    p.tag.id = RPI_FIRMWARE_GET_DOMAIN_STATE;
-    p.tag.value_length = 0;
-    p.tag.buffer_size = sizeof(p) - sizeof(p.tag);
-    p.id = type;
-    p.state = ~0;
+        int words = tags[t].size / 4;               
+        for (int i = 0; i < words; i++){
+            mbox_buffer[offset++] = tags[t].data[i];    
+        }
+     }
 
-    mailbox_process((mailbox_tag *)&p, sizeof(p));
-    return p.state && p.state != ~0;
+     mbox_buffer[offset++] = 0;         
+     mbox_buffer[0] = offset * sizeof(u32); 
+     mbox_buffer[1] = 0;               
+
+    clean_data_cache_for_address(mbox_buffer, mbox_buffer[0]);     
+
+    u32 bus = ARM_TO_BUS_ADDR((u32)(uintptr_t)mbox_buffer);
+
+    if (mbx_write(MAIL_TAGS, bus) != 0) {
+        uart_printf(ANSI_RED"Failed to write to the mailbox!\n"ANSI_RESET);
+        return -1;
+    }
+    if (mbx_wait_response(MAIL_TAGS, bus) != 0){
+        uart_printf(ANSI_RED"Failed to get the mailbox response!\n"ANSI_RED);
+        return -1;
+    }
+
+    //copying the results back to tags[] array
+    offset = 2;
+    for(int t = 0; t < num_tags; t++){
+        tags[t].tag         = mbox_buffer[offset++];
+        tags[t].size        = mbox_buffer[offset++];
+        tags[t].req_code    = mbox_buffer[offset++];
+
+        int words = tags[t].size/4;
+        for (int i = 0; i < words; i++){
+            tags[t].data[i] = mbox_buffer[offset++];
+        }
+    }
+    return 0;   //success
+
 }
