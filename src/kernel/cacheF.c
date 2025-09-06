@@ -1,7 +1,7 @@
-//  src/cacheF.c
+//  src/kernel/cacheF.c
 
 //Helps in flushing out CPU registers to the main memory, particularly written for mailbox.c
-#include "cacheF.h"
+#include "kernel/cacheF.h"
 
 
 void clean_data_cache_for_address(void *addr, u32 size){

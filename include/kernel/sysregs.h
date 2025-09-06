@@ -1,4 +1,4 @@
-// include/sysregs
+// include/kernel/sysregs
 
 //a header library that just defines all the registers that handle the exception level logic, i mainly just copied it 
 

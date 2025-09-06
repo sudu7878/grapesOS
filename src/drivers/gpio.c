@@ -1,12 +1,12 @@
-// src/gpio.c
+// src/drivers/gpio.c
 
 //gpio controller
 
-#include "peripherals/gpio_hedr.h"
-#include "gpio.h"
-#include "utils.h"
+#include "drivers/gpio_hedr.h"
+#include "drivers/gpio.h"
+#include "lib/utils.h"
 #include "common.h"
-#include "peripherals/timer.h"
+#include "drivers/timer.h"
 
 
 void gpio_pin_set_func(u8 pinNumber, GpioFunc func) {

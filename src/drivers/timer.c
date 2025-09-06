@@ -1,7 +1,9 @@
+//include/drivers/timer.h
+
 #include "printf.h"
-#include "peripherals/timer.h"
-#include "peripherals/irq_hedr.h"
-#include "peripherals/auxillary.h"
+#include "drivers/timer.h"
+#include "drivers/gpio_hedr.h"
+#include "drivers/auxillary.h"
 
 const u32 interval_1 = CLOCKHZ;
 u32 cur_val_1 = 0;

@@ -1,7 +1,7 @@
-// src/boot.s
+// src/aarch/boot.s
 
-#include "mm.h"
-#include "sysregs.h"
+#include "kernel/mm.h"
+#include "kernel/sysregs.h"
 
 //this assembly file is responsible for booting the kernel, runs in 64 bit mode.
 

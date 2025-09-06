@@ -1,21 +1,23 @@
-// src/bgudakrnl.c
+// src/kernel/bgudakrnl.c
 
 //This is the Baguda Kernel source
 
     //kernel headers
-        #include "bgudakrnl.h"
-        #include "gpio.h"
-        #include "printf.h"
-        #include "utils.h"
-        #include "mailbox.h"
-        #include "cacheF.h"
-        #include "irq.h"
+        #include "kernel/bgudakrnl.h"
+        #include "kernel/irq_hedr.h"
+        #include "kernel/cacheF.h"
+        #include "kernel/irq.h"
+        
+    //driver headers
+        #include "drivers/gpio.h"
+        #include "drivers/mailbox.h"
+        #include "drivers/uart.h"
+        #include "drivers/gpio_hedr.h"
+        #include "drivers/timer.h"
     
-    //peripheral headers
-        #include "peripherals/uart.h"
-        #include "peripherals/gpio_hedr.h"
-        #include "peripherals/timer.h"
-        #include "peripherals/irq_hedr.h"
+    //lib headers
+        #include "lib/printf.h"
+        #include "lib/utils.h"
 
     //standard library headers
         #include <stdint.h>
@@ -27,8 +29,8 @@ uint64_t get_el(void);  //gets the exception level of the CPU, defined in utils.
 
 //Getting mailbox tags:
 mbx_tag_t tags[2] ={
-    {RPI_FIRMWARE_GET_TEMPERATURE, 8, 0, {0, 0} },
-    {RPI_FIRMWARE_GET_BOARD_REVISION, 4, 0, {0}}
+    /*0.*/{RPI_FIRMWARE_GET_TEMPERATURE, 8, 0, {0, 0} },
+    /*1.*/{RPI_FIRMWARE_GET_BOARD_REVISION, 4, 0, {0}}
 };
 
 //mini strcmp function to compare two strings
@@ -65,7 +67,7 @@ void process_command(const char *cmd) {
         uart_send_string("3.    clear - Clear the terminal screen.\n");
         uart_send_string("4.    GetTemp - Get the current temperature of the CPU core.\n");
         uart_send_string("5.    GetBoardRevision - Get the board's revision number.");
-        uart_send_string("6.    0x100 - Test mailbox.");
+        uart_send_string("6.    0x100 - Test mailbox.\n");
         get_prompt();
 
     }
@@ -96,24 +98,19 @@ void process_command(const char *cmd) {
     }
 
     else if (strcmp(cmd, "GetTemp") == 0){
-        u32 temp_buff[2] = {0,0}; //sensor ID = 0, placeholder for resp
 
         if(mbx_multi_request(tags, 2) == 0) {
             uart_printf("Temp: %dC\n", tags[0].data[1]/1000);
         }
-
-        uart_printf("Temp: %dC\n", temp_buff[1]/1000);
         get_prompt();
     }
 
     
     //Get Core Temperature
     else if (strcmp(cmd, "GetBoardRevision") == 0){
-        u32 rev_buff[1] = {0};
          if(mbx_multi_request(tags, 2) == 0) {
             uart_printf("Board Revision no: %x\n", tags[1].data[0]);
         }
-        uart_printf(ANSI_CYAN "Board revision: 0x%x\n", rev_buff[0], ANSI_RESET);
         get_prompt();
     }
 

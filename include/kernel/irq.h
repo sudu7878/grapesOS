@@ -1,4 +1,4 @@
-// include/irq.h
+// include/kernel/irq.h
 
 #pragma once
 

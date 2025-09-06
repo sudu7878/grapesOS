@@ -1,4 +1,6 @@
-#include "entry.h"
+//include/aarch/entry.S
+
+#include "kernel/entry.h"
 
 
 //the main hardware logic that handles the entries and defines the vector entry for the interrupts and exceptions

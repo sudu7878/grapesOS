@@ -1,9 +1,9 @@
-//include/gpio.h
+//include/drivers/gpio.h
 
 
 #pragma once
 
-#include "peripherals/gpio_hedr.h"
+#include "drivers/gpio_hedr.h"
 
 typedef enum GpioFunc{
     GFInput = 0, 

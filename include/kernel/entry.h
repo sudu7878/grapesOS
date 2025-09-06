@@ -1,4 +1,4 @@
-// include/entry.h
+// include/kernel/entry.h
 
 
 //here we define all the functions for the interrupt that the CPU has to follow, we later referenced this file in out assembly code.

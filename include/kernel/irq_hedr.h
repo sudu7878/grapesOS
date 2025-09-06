@@ -1,4 +1,4 @@
-//peripherals/irq_hedr.h
+//peripherals/kernel/irq_hedr.h
 
 /* Different raspberry pi versions had a slightly different irq register nomenclature, so we created two structs for each version thatr grapesOS 
     will support. Additionally, these things here are just the irq registers that control the IRQ response, Baguda Kernel calls them.*/
@@ -6,7 +6,7 @@
 #pragma once
 
 
-#include "peripherals/base.h"
+#include "drivers/base.h"
 #include "common.h"
 
 enum vc_irqs {                      //videocore irq numbers

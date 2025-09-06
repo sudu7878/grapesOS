@@ -27,6 +27,7 @@
         "utils.h": "c",
         "irq.h": "c",
         "timer.h": "c",
-        "cachef.h": "c"
+        "cachef.h": "c",
+        "base.h": "c"
     }
 }

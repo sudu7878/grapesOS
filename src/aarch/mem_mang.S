@@ -1,4 +1,4 @@
-//src/mem_mang.s
+//src/aarch/mem_mang.s
 
 // an assembly loop that zeroes out the bss section of the bss memory addresses, so making sure it doesnt contain garbage values
 

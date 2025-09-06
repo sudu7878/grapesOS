@@ -1,14 +1,15 @@
-// src/irq.c
+// src/kernel/irq.c
 
 // This thing here handles interrupts request in the kernel
 
-#include "utils.h"
-#include "entry.h"
-#include "peripherals/irq_hedr.h"
-#include "peripherals/auxillary.h"
-#include "printf.h"
-#include "irq.h"
-#include "uart.h"
+#include "lib/utils.h"
+#include "kernel/entry.h"
+#include "drivers/gpio_hedr.h"
+#include "drivers/auxillary.h"
+#include "lib/printf.h"
+#include "kernel/irq.h"
+#include "drivers/uart.h"
+#include "kernel/irq_hedr.h"
 
 
 const char entry_error_messages[16][32] = {

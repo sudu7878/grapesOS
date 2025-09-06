@@ -1,4 +1,4 @@
-// include/peripherals/uart.h
+// include/drivers/uart.h
 
 //*Mini UART is a inteface in pi that is the derivation of the main UART or PL011 UART. This thing is used by bluetooth module by default, plus its much more advanced and difficult to set up, so I used mini uart instead.
 
@@ -6,9 +6,9 @@
 #pragma once
 
 #include "gpio.h"
-#include "peripherals/gpio_hedr.h"
+#include "drivers/gpio_hedr.h"
 #include "common.h"
-#include "peripherals/auxillary.h"
+#include "drivers/auxillary.h"
 
 #define UART0DR ((volatile unsigned int *)0x9000000) // UART0 Data Register in ARM architecture (raspberry pi)
 

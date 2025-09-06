@@ -1,4 +1,4 @@
-//include/peripherals/auxillary.h
+//include/drivers/auxillary.h
 
 /* just some standard helper registers that can be set for a particular parent function*/
 

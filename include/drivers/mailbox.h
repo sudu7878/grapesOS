@@ -1,11 +1,11 @@
-// include/mailbox.h
+// include/drivers/mailbox.h
 
 #pragma once
 
 #include "common.h"
 
 #include <stdint.h>
-#include "peripherals/base.h"
+#include "drivers/base.h"
 
 #ifndef MAILBOX_H
 #define MAILBOX_H

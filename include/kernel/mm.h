@@ -1,4 +1,4 @@
-// include/mm.h
+// include/kernel/mm.h
 
 
 /* just mentioning the memory management header here, so that it can be included in assembly files, or else it just freakes out when

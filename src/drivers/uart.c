@@ -1,11 +1,11 @@
-// src/uart.c
+// src/drivers/uart.c
 
 //mini UART interface controller
 
-#include "gpio.h"
-#include "utils.h"
-#include "peripherals/auxillary.h"
-#include "peripherals/uart.h"
+#include "drivers/gpio.h"
+#include "lib/utils.h"
+#include "drivers/auxillary.h"
+#include "drivers/uart.h"
 #include <stdarg.h>
 
 #define TXD 14      //define GPIO 14 or pin 8 as TX (for transmitting)

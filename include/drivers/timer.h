@@ -1,8 +1,10 @@
+// include/drivers/timer.h
+
 #pragma once
 
 //this thing here lets me use the system crystal clock to count the time for various stuff throughout the system
 
-#include "peripherals/base.h"
+#include "drivers/base.h"
 #include "common.h"
 
 #define CLOCKHZ 1000000

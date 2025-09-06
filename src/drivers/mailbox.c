@@ -1,4 +1,4 @@
-// src/mailbox.c
+// src/drivers/mailbox.c
 
 //The mailbox driver API is used to communicate with the VideoCore GPU on the Raspberry Pi.
 
@@ -51,10 +51,10 @@
                 
 */
 
-#include "mailbox.h"
-#include "peripherals/base.h"
-#include "peripherals/uart.h"
-#include "cacheF.h"
+#include "drivers/mailbox.h"
+#include "drivers/base.h"
+#include "drivers/uart.h"
+#include "kernel/cacheF.h"
 #include "common.h"
 #include <stdint.h>
 #include <stdbool.h>

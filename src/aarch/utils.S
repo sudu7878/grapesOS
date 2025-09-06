@@ -1,4 +1,4 @@
-//src/utils.s
+//src/aarch/utils.s
 
 /*this thing here helps me to read/write 32 bit values from/to memory addresses, so that i can use gpios and stuff, it also contains a delay
 function*/

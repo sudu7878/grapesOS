@@ -1,4 +1,4 @@
-// include/bgudakrnl.h
+// include/kernel/bgudakrnl.h
 
 
 #ifndef BGUDAKRNL_H

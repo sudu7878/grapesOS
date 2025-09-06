@@ -1,8 +1,8 @@
-// src/irq.S
+// src/aarch/irq.S
 
 // This thing here is responsible for loading exception vector table in the CPU, and also enabling and disabling
 
-#include "entry.h"
+#include "kernel/entry.h"
 
 .globl irq_init_vectors
 

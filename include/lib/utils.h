@@ -1,4 +1,4 @@
-// include/utils.h
+// include/lib/utils.h
 
 //just some utility functions that are used throughout the project, like delay and memory access functions, nothing much to see here.
 
