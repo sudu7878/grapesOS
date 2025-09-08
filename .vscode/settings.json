@@ -28,6 +28,10 @@
         "irq.h": "c",
         "timer.h": "c",
         "cachef.h": "c",
-        "base.h": "c"
+        "base.h": "c",
+        "cstring": "c",
+        "cli.h": "c",
+        "funcheaders.h": "c",
+        "wrappers.h": "c"
     }
 }

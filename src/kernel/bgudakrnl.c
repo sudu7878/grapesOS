@@ -14,6 +14,7 @@
         #include "drivers/uart.h"
         #include "drivers/gpio_hedr.h"
         #include "drivers/timer.h"
+        #include "drivers/video_driver.h"
     
     //lib headers
         #include "lib/printf.h"
@@ -110,6 +111,19 @@ void process_command(const char *cmd) {
     else if (strcmp(cmd, "GetBoardRevision") == 0){
          if(mbx_multi_request(tags, 2) == 0) {
             uart_printf("Board Revision no: %x\n", tags[1].data[0]);
+        }
+        get_prompt();
+    }
+
+    else if (strcmp(cmd, "IntializeVdo") == 0){
+        video_info_t fb_info = video_init();    //initialize framebuffer
+        uart_printf("Video init: %u x %u\n", fb_info.width, fb_info.height);
+
+        if (fb_info.width == 0){
+            uart_printf(ANSI_RED"Fatal error: Failed to intialize framebuffer; halting process.\n"ANSI_RESET);
+            while(1);
+
+            video_fill_screen(0x00FF0000);   //red color
         }
         get_prompt();
     }

@@ -14,6 +14,7 @@ OBJ = \
   $(BUILD)/boot.o \
   $(BUILD)/cacheF.o \
   $(BUILD)/mem_mang.o \
+  $(BUILD)/video_driver.o\
   $(BUILD)/utils.o \
   $(BUILD)/entry.o \
   $(BUILD)/bgudakrnl.o \
@@ -69,6 +70,9 @@ $(BUILD)/uart.o: $(SRC)/drivers/uart.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/irq.o: $(SRC)/kernel/irq.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
+
+$(BUILD)/video_driver.o: $(SRC)/drivers/video_driver.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/irq_S.o: $(SRC)/aarch/irq.S | $(BUILD)
