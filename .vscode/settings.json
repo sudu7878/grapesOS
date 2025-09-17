@@ -32,6 +32,10 @@
         "cstring": "c",
         "cli.h": "c",
         "funcheaders.h": "c",
-        "wrappers.h": "c"
+        "wrappers.h": "c",
+        "array": "c",
+        "vector": "c",
+        "xstring": "c",
+        "video_driver.h": "c"
     }
 }

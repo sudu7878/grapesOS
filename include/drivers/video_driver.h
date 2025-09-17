@@ -19,6 +19,8 @@ typedef struct {
 
 video_info_t video_init(void);
 
+extern video_info_t video_info;
+
 void video_draw_px(u32 x, u32 y, u32 color);
 
 void video_fill_screen(u32 color);

@@ -67,8 +67,9 @@ void process_command(const char *cmd) {
         uart_send_string("2.    help - Show this help message.\n");
         uart_send_string("3.    clear - Clear the terminal screen.\n");
         uart_send_string("4.    GetTemp - Get the current temperature of the CPU core.\n");
-        uart_send_string("5.    GetBoardRevision - Get the board's revision number.");
-        uart_send_string("6.    0x100 - Test mailbox.\n");
+        uart_send_string("5.    GetBoardRevision - Get the board's revision number.\n");
+        uart_send_string("6.    VdoInit - Initialize Video drivers.\n");
+        uart_send_string("7.    0x100 - Test mailbox.\n");
         get_prompt();
 
     }
@@ -115,16 +116,20 @@ void process_command(const char *cmd) {
         get_prompt();
     }
 
-    else if (strcmp(cmd, "IntializeVdo") == 0){
-        video_info_t fb_info = video_init();    //initialize framebuffer
-        uart_printf("Video init: %u x %u\n", fb_info.width, fb_info.height);
+    else if (strcmp(cmd, "VdoInit") == 0){
+        if(video_info.virtual_address == NULL){
+            video_info = video_init();
+            uart_printf("Video Init: %d x %d\n", video_info.width, video_info.height);
 
-        if (fb_info.width == 0){
-            uart_printf(ANSI_RED"Fatal error: Failed to intialize framebuffer; halting process.\n"ANSI_RESET);
-            while(1);
-
-            video_fill_screen(0x00FF0000);   //red color
+            if (video_info.width == 0){
+                uart_printf(ANSI_RED"Fatal Error: Failed to initialize video driver.\n"ANSI_RESET);
+                get_prompt();
+                return;
+            }
+        } else{
+            uart_printf(ANSI_YELLOW"Video driver already initialized! Re-using existing framebuffer.\n"ANSI_RESET);
         }
+        video_fill_screen(0x00FF0000);   //red color
         get_prompt();
     }
 

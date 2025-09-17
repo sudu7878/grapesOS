@@ -15,3 +15,17 @@ void clean_data_cache_for_address(void *addr, u32 size){
     __asm__ __volatile__("isb sy");
 }
 
+void invalidate_data_cache_for_address(void* addr, u32 size) {
+    uintptr_t start = (uintptr_t)addr;
+    uintptr_t end = start + size;
+
+    // Align to 64-byte cache line size
+    start &= ~(64 - 1);
+
+    for (uintptr_t line = start; line < end; line += 64) {
+        __asm__ volatile ("dc ivac, %0" :: "r"(line) : "memory");
+    }
+
+    __asm__ volatile ("dsb sy");  // Ensure completion
+    __asm__ volatile ("isb");
+}
