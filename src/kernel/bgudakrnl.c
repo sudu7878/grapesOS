@@ -117,20 +117,26 @@ void process_command(const char *cmd) {
     }
 
     else if (strcmp(cmd, "VdoInit") == 0){
-        if(video_info.virtual_address == NULL){
-            video_info = video_init();
-            uart_printf("Video Init: %d x %d\n", video_info.width, video_info.height);
+        if (!video_inited) {
+            video_init();
+         } else {
+            uart_printf(ANSI_YELLOW"Video driver already initialied! Re-using pre-allocated one!\n" ANSI_RESET);
+         }
 
-            if (video_info.width == 0){
-                uart_printf(ANSI_RED"Fatal Error: Failed to initialize video driver.\n"ANSI_RESET);
-                get_prompt();
-                return;
+         if (!video_info.virtual_address){
+            uart_printf(ANSI_RED"Video initialization failed earlier; not drawing bruh.\n"ANSI_RESET);
+            get_prompt();
+            return;
+         }
+
+         for (u32 y = 0; y < 100; y++){
+            for (u32 x = 0; x < 200l; x++){
+                video_draw_px(x, y, 0x00FF0000);
             }
-        } else{
-            uart_printf(ANSI_YELLOW"Video driver already initialized! Re-using existing framebuffer.\n"ANSI_RESET);
-        }
-        video_fill_screen(0x00FF0000);   //red color
-        get_prompt();
+         }
+
+         get_prompt();
+    
     }
 
 
@@ -182,6 +188,7 @@ void kernel_main() {
         if (c == '\r' || c == '\n') {       //detect enter key press (as UART returns these characters when enter is pressed)
             buffer[idx] = '\0';             //null-terminate the string so that C doesnt spend time reading the string infinitely
             process_command(buffer);        //return the command to the process_command function so that we can generate the output
+            uart_printf("DEBUG: process_command() entered with cmd=%s\n", buffer);
             idx = 0;                        //reset the character index for the next commadn input!
         }
         else if (idx < sizeof(buffer) -1){      //this detects if we pressed enter key or not, if not, then we store the character into the buffer!

@@ -17,9 +17,11 @@ typedef struct {
     u8* virtual_address; 
 }  video_info_t;
 
-video_info_t video_init(void);
+void video_init(void);
 
 extern video_info_t video_info;
+
+extern bool video_inited;
 
 void video_draw_px(u32 x, u32 y, u32 color);
 

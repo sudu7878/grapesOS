@@ -2,12 +2,11 @@
 #include "drivers/mailbox.h"
 #include "drivers/uart.h"
 #include "lib/utils.h"
-#include <stddef.h>
 
+video_info_t video_info;
 
-video_info_t video_info = {0};
+bool Vdo_driver_inited;
 
-bool video_inited = false;
 
 #define BUS_TO_PHYSS(addr) ((addr) & ~0xC0000000)
 
@@ -32,14 +31,16 @@ static void get_display_res(u32* width, u32* height){
     }
 }
 
-void video_init(void) {
+video_info_t video_init(void) {
 
-    if (video_inited){
+    Vdo_driver_inited = false;
+
+    if (Vdo_driver_inited == true){
         uart_printf(ANSI_YELLOW"Uhh: Video drivers are already initialized.\n"ANSI_RESET);
-        return;
 
-    }
-            video_inited = true;
+        return video_info;
+    } else {
+            Vdo_driver_inited = true;
 
             u32 scrn_w, scrn_h;
             get_display_res(&scrn_w, &scrn_h);
@@ -49,7 +50,7 @@ void video_init(void) {
 
             uart_printf("Attempting to send framebuffer request to GPU... w=%d h=%d\n" ANSI_RESET, scrn_w, scrn_h);
 
-            mbx_tag_t tags[4] __attribute__((aligned(16)));
+            mbx_tag_t tags[4];
 
             tags[0].tag = RPI_FIRMWARE_FRAMEBUFFER_SET_PHYSICAL_WIDTH_HEIGHT;
             tags[0].size = 8;
@@ -74,22 +75,38 @@ void video_init(void) {
             tags[3].data[0] = 16;   //aligning to 16 bytes
             tags[3].data[1] = 0;    //intial address 0
 
-            
-            int rc = mbx_multi_request(tags, 4);
+            volatile int t;
+            for (t = 0; t < 10; t++) {
+                int rc = mbx_multi_request(tags, 4);
 
-            if(rc == 0 && (tags[3].req_code & 0x80000000) && tags[3].data[0] != 0) {
+                if (rc == 0 && (tags[3].req_code & 0x80000000)){
+                    break;  //we got the framebuffer so breakinh
+                } else {
+                   uart_printf(ANSI_RED"OOF: Framebuffer allocation failed! Retry attempt: %d, Error code: %x\n" ANSI_RED, t, tags[3].req_code & 0x80000000);
+
+                    if (t == 9){
+                        uart_printf(ANSI_RED"OOF: All framebuffer allocation attempts failed.\n"ANSI_RESET);
+                        break;
+                        return video_info;
+                    }
+                    delay(50000);
+                }
+            }
+        
+            //on success
+            if (tags[3].req_code & 0x80000000) {
                 video_info.bus_address = tags[3].data[0];
                 video_info.buffer_size = tags[3].data[1];
-                video_info.virtual_address = (u8*)(uintptr_t)BUS_TO_PHYSS(video_info.bus_address);
-                uart_printf("Framebuffer OK: Bus: %x Size: %x Virt: %x\n", video_info.bus_address, video_info.buffer_size, video_info.virtual_address);
+                video_info.virtual_address = (u8*)(uintptr_t)BUS_TO_PHYSS(video_info.bus_address);    //doing bitwise NOT to filter out CPU's perspective of address.
+                uart_printf("Wohoo! Framebuffer allocation completed successfully! Bus = %x, size = %x virt_addr = %x\n"ANSI_RESET,
+                            video_info.bus_address, video_info.buffer_size, video_info.virtual_address);
             } else {
-                uart_printf(ANSI_RED"OOF: Framebuffer failed by the GPU (alloc)\n" ANSI_RESET);
+                uart_printf(ANSI_RED"OOF: Framebuffer allocation failed by GPU.\n" ANSI_RESET);
+                return video_info;
 
-                video_info.virtual_address = NULL;
-                return;
             }
 
-            mbx_tag_t pitch_tag __attribute__((aligned(16))) = {
+            mbx_tag_t pitch_tag = {
                 .tag = RPI_FIRMWARE_FRAMEBUFFER_GET_PITCH,
                 .size = 4,
                 .req_code = 0,
@@ -100,11 +117,12 @@ void video_init(void) {
                 video_info.pitch = pitch_tag.data[0];
                 uart_printf("Yay! got the pitch!\n"ANSI_RESET);
             } else{
-                video_info.pitch = scrn_w * (video_info.depth/8);
                 uart_printf(ANSI_YELLOW"Uhh: Failed to get the pitch; using the default one.\n"ANSI_RESET);
+                video_info.pitch = scrn_w * (video_info.depth/8);
             }
+            return video_info;
         }
-    
+    }
 
 //pixer drawer
     void video_draw_px(u32 x, u32 y, u32 color){
