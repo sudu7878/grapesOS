@@ -20,6 +20,7 @@ OBJ = \
   $(BUILD)/bgudakrnl.o \
   $(BUILD)/gpio.o \
   $(BUILD)/uart.o \
+  $(BUILD)/text_rend.o\
   $(BUILD)/irq.o \
   $(BUILD)/irq_S.o \
   $(BUILD)/printf.o \
@@ -60,8 +61,6 @@ $(BUILD)/utils.o: $(SRC)/aarch/utils.S | $(BUILD)
 
 
 # c object files
-$(BUILD)/bgudakrnl.o: $(SRC)/kernel/bgudakrnl.c | $(BUILD)
-	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/gpio.o: $(SRC)/drivers/gpio.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
@@ -85,6 +84,12 @@ $(BUILD)/entry.o: $(SRC)/aarch/entry.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/mailbox.o: $(SRC)/drivers/mailbox.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
+
+$(BUILD)/text_rend.o: $(SRC)/display/text_rend.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
+
+$(BUILD)/bgudakrnl.o: $(SRC)/kernel/bgudakrnl.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 

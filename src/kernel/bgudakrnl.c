@@ -20,6 +20,9 @@
         #include "lib/printf.h"
         #include "lib/utils.h"
 
+    //dislpay headers
+      #include "display/text_rend.h"
+
     //standard library headers
         #include <stdint.h>
         #include <stddef.h>
@@ -71,7 +74,6 @@ void process_command(const char *cmd) {
         uart_send_string("6.    VdoInit - Initialize Video drivers.\n");
         uart_send_string("7.    0x100 - Test mailbox.\n");
         get_prompt();
-
     }
 
     //Clear the terminal screen
@@ -129,11 +131,9 @@ void process_command(const char *cmd) {
             return;
          }
 
-         for (u32 y = 0; y < 100; y++){
-            for (u32 x = 0; x < 200l; x++){
-                video_draw_px(x, y, 0x00FF0000);
-            }
-         }
+         draw_string(50, 50, "Oiii Hello from grapesOS!", 0x00FFFFFF);
+         term_puts("Hello from grapesOS terminal!\nLine 2 here test.");
+         draw_Logo(50, 50);
 
          get_prompt();
     
@@ -188,7 +188,7 @@ void kernel_main() {
         if (c == '\r' || c == '\n') {       //detect enter key press (as UART returns these characters when enter is pressed)
             buffer[idx] = '\0';             //null-terminate the string so that C doesnt spend time reading the string infinitely
             process_command(buffer);        //return the command to the process_command function so that we can generate the output
-            uart_printf("DEBUG: process_command() entered with cmd=%s\n", buffer);
+            //uart_printf("DEBUG: process_command() entered with cmd=%s\n", buffer);
             idx = 0;                        //reset the character index for the next commadn input!
         }
         else if (idx < sizeof(buffer) -1){      //this detects if we pressed enter key or not, if not, then we store the character into the buffer!

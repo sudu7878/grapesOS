@@ -3,6 +3,7 @@
 #include "drivers/uart.h"
 #include "lib/utils.h"
 #include <stddef.h>
+#include "common.h"
 
 
 video_info_t video_info = {0};
@@ -88,6 +89,7 @@ void video_init(void) {
                 video_info.virtual_address = NULL;
                 return;
             }
+            
 
             mbx_tag_t pitch_tag __attribute__((aligned(16))) = {
                 .tag = RPI_FIRMWARE_FRAMEBUFFER_GET_PITCH,
