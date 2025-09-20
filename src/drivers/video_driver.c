@@ -36,7 +36,7 @@ static void get_display_res(u32* width, u32* height){
 void video_init(void) {
 
     if (video_inited){
-        uart_printf(ANSI_YELLOW"Uhh: Video drivers are already initialized.\n"ANSI_RESET);
+        uart_printf(ANSI_YELLOW"[VIDEO_DRIVER]: Video drivers are already initialized.\n"ANSI_RESET);
         return;
 
     }
@@ -48,7 +48,7 @@ void video_init(void) {
             video_info.height = scrn_h;
             video_info.depth = 32;  //32bpp (BGRA)
 
-            uart_printf("Attempting to send framebuffer request to GPU... w=%d h=%d\n" ANSI_RESET, scrn_w, scrn_h);
+            uart_printf("[VIDEO_DRIVER]: Attempting to send framebuffer request to GPU... w=%d h=%d\n" ANSI_RESET, scrn_w, scrn_h);
 
             mbx_tag_t tags[4] __attribute__((aligned(16)));
 
@@ -82,9 +82,9 @@ void video_init(void) {
                 video_info.bus_address = tags[3].data[0];
                 video_info.buffer_size = tags[3].data[1];
                 video_info.virtual_address = (u8*)(uintptr_t)BUS_TO_PHYSS(video_info.bus_address);
-                uart_printf("Framebuffer OK: Bus: %x Size: %x Virt: %x\n", video_info.bus_address, video_info.buffer_size, video_info.virtual_address);
+                uart_printf("[VIDEO_DRIVER]: Framebuffer OK. Bus: %x Size: %x Virt: %x\n", video_info.bus_address, video_info.buffer_size, video_info.virtual_address);
             } else {
-                uart_printf(ANSI_RED"OOF: Framebuffer failed by the GPU (alloc)\n" ANSI_RESET);
+                uart_printf(ANSI_RED"[VIDEO_DRIVER]: Framebuffer failed by the GPU (alloc)\n" ANSI_RESET);
 
                 video_info.virtual_address = NULL;
                 return;
@@ -100,10 +100,10 @@ void video_init(void) {
 
             if (mbx_multi_request(&pitch_tag, 1) == 0 && pitch_tag.req_code & 0x80000000) {
                 video_info.pitch = pitch_tag.data[0];
-                uart_printf("Yay! got the pitch!\n"ANSI_RESET);
+                uart_printf("[VIDEO_DRIVER]: Found the pitch.\n"ANSI_RESET);
             } else{
                 video_info.pitch = scrn_w * (video_info.depth/8);
-                uart_printf(ANSI_YELLOW"Uhh: Failed to get the pitch; using the default one.\n"ANSI_RESET);
+                uart_printf(ANSI_YELLOW"[VIDEO_DRIVER]: Failed to get the pitch; using the default one.\n"ANSI_RESET);
             }
         }
     

@@ -73,6 +73,8 @@ void process_command(const char *cmd) {
         uart_send_string("5.    GetBoardRevision - Get the board's revision number.\n");
         uart_send_string("6.    VdoInit - Initialize Video drivers.\n");
         uart_send_string("7.    0x100 - Test mailbox.\n");
+        uart_send_string("7.    StartVdoEcho - Starting echoing characters from UART terminal to the screen. Required VdoInit first.\n");
+        uart_send_string("8.    DrawLogo - Draw grapesOS logo on the screen. Required VdoInit.");
         get_prompt();
     }
 
@@ -87,13 +89,13 @@ void process_command(const char *cmd) {
         int result = mbx_write(8, msg);
 
         if (result == 0){
-            uart_printf("Mailbox write success.\n");
+            uart_printf("[KERNEL]: Mailbox write success.\n");
         } else{
-            uart_printf("Mailbox write failed!\n");
+            uart_printf("[KERNEL]: Mailbox write failed!\n");
         }
         unsigned int response = mbx_read(8);
         if (response == 0xFFFFFFFF){
-            uart_printf(ANSI_RED"Fatal error: Invalid mail response!\n" ANSI_RESET);
+            uart_printf(ANSI_RED"[KERNEL]: Fatal error: Invalid mail response!\n" ANSI_RESET);
         }
         uart_send_hex(response);
         uart_send_string("\n");
@@ -122,21 +124,53 @@ void process_command(const char *cmd) {
         if (!video_inited) {
             video_init();
          } else {
-            uart_printf(ANSI_YELLOW"Video driver already initialied! Re-using pre-allocated one!\n" ANSI_RESET);
+            uart_printf(ANSI_YELLOW"[KERNEL]: Video driver already initialied! Re-using pre-allocated one!\n" ANSI_RESET);
          }
 
          if (!video_info.virtual_address){
-            uart_printf(ANSI_RED"Video initialization failed earlier; not drawing bruh.\n"ANSI_RESET);
+            uart_printf(ANSI_RED"[KERNEL]: Video initialization failed earlier!\n"ANSI_RESET);
             get_prompt();
             return;
          }
 
-         draw_string(50, 50, "Oiii Hello from grapesOS!", 0x00FFFFFF);
-         term_puts("Hello from grapesOS terminal!\nLine 2 here test.");
-         draw_Logo(50, 50);
+         draw_string(60, 60, "Hello from grapesOS!", 0x00FFFFFF);
 
          get_prompt();
     
+    }
+
+    else if (strcmp(cmd, "DrawLogo") == 0){
+        if(!video_inited){
+            uart_printf(ANSI_RED"[KERNEL]: Cannot draw; video driver not intialized! Run 'VdoInit' first!\n"ANSI_RESET);
+            get_prompt();
+        } else{
+            draw_Logo(100, 100);
+        }
+        get_prompt();
+    }
+
+    else if (strcmp(cmd, "StartVdoEcho") == 0){
+        if(!video_inited){
+            uart_printf(ANSI_RED"[KERNEL]: Cannot echo; video driver not intialized! Run 'VdoInit' first!\n"ANSI_RESET);
+            get_prompt();
+        } else{
+            uart_printf("Print to screen started. Press 'ESC' key to exit and return to kernel.\n");
+            int x = 50, y = 50;
+            char c;
+            while (1){
+                c = uart_recv();
+                if (c == '\r' || c == '\n'){
+                    draw_string(x, y, "\n", 0x00FFFFFF);
+                }
+                if (c == 27) {
+                    uart_printf("\nExiting Echo mode.\n");
+                    break;
+                }
+                draw_char(x, y, c, 0x00FFFFFF);
+                x += FONT_W;     //moving the char to next position
+            }
+            get_prompt();
+        }
     }
 
 
