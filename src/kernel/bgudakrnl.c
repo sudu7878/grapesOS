@@ -7,6 +7,7 @@
         #include "kernel/irq_hedr.h"
         #include "kernel/cacheF.h"
         #include "kernel/irq.h"
+        #include "kernel/terminal.h"
         
     //driver headers
         #include "drivers/gpio.h"
@@ -49,6 +50,9 @@ int strcmp(const char *s1, const char *s2){
 //function to get the prompt from the user
 void get_prompt(){
     uart_send_string(ANSI_GREEN "\ngrapesOS> " ANSI_RESET);
+    if (video_inited && video_info.virtual_address){
+        terminal_puts(TXT_GREEN "\ngrapesOS> " TXT_REST);
+    }
 }
 
 
@@ -60,7 +64,7 @@ void process_command(const char *cmd) {
         uart_send_string(ANSI_CYAN "Current EL: " ANSI_RESET);
         uart_send(get_el() + '0');  //convert the exception level to char(ASCII) and send it
         uart_send_string("\n");
-        get_prompt();
+        
     }
 
     //Get Help 
@@ -71,17 +75,30 @@ void process_command(const char *cmd) {
         uart_send_string("3.    clear - Clear the terminal screen.\n");
         uart_send_string("4.    GetTemp - Get the current temperature of the CPU core.\n");
         uart_send_string("5.    GetBoardRevision - Get the board's revision number.\n");
-        uart_send_string("6.    VdoInit - Initialize Video drivers.\n");
-        uart_send_string("7.    0x100 - Test mailbox.\n");
+        uart_send_string("6.    0x100 - Test mailbox.\n");
         uart_send_string("7.    StartVdoEcho - Starting echoing characters from UART terminal to the screen. Required VdoInit first.\n");
-        uart_send_string("8.    DrawLogo - Draw grapesOS logo on the screen. Required VdoInit.");
-        get_prompt();
+        uart_send_string("8.    DrawLogo - Draw grapesOS logo on the screen. Required VdoInit.\n");
+        uart_send_string("9.    ShutDown - Stops all kernel processes and puts system in idle mode.\n");
+
+        printf("Available commands: \n");
+        printf("1.    get_el - Get the current exception level in ARM CPU.\n");
+        printf("2.    help - Show this help message.\n");
+        printf("3.    clear - Clear the terminal screen.\n");
+        printf("4.    GetTemp - Get the current temperature of the CPU core.");
+        printf("5.    GetBoardRevision - Get the board's revision number.\n");
+        printf("6.    0x100 - Test mailbox.\n");
+        printf("7.    StartVdoEcho - Starting echoing characters from UART terminal to the screen. Required VdoInit first.\n");
+        printf("8.    DrawLogo - Draw grapesOS logo on the screen. Required VdoInit.\n");
+        printf("9.    ShutDown - Stops all kernel processes and puts system in idle mode.\n");
+
+        
     }
 
     //Clear the terminal screen
     else if (strcmp(cmd, "clear") == 0){
         uart_send_string("\033[2J\033[H"); //ANSI escape code to clear the terminal screen and move cursor to home position
-        get_prompt();
+        terminal_clr();
+        
     }
 
     else if (strcmp(cmd, "0x100") == 0){
@@ -90,16 +107,19 @@ void process_command(const char *cmd) {
 
         if (result == 0){
             uart_printf("[KERNEL]: Mailbox write success.\n");
+            printf("[KERNEL]: Mailbox write success.\n");
         } else{
-            uart_printf("[KERNEL]: Mailbox write failed!\n");
+            uart_printf(ANSI_RED "[KERNEL]: Mailbox write failed!\n" ANSI_RESET);
+            printf(TXT_RED"[KERNEL]: Mailbox write failed.\n"TXT_REST);
         }
         unsigned int response = mbx_read(8);
         if (response == 0xFFFFFFFF){
             uart_printf(ANSI_RED"[KERNEL]: Fatal error: Invalid mail response!\n" ANSI_RESET);
+            printf(TXT_RED"[KERNEL]: Fatal error: Invalid mail response!\n"TXT_REST);
         }
         uart_send_hex(response);
         uart_send_string("\n");
-        get_prompt();
+        
 
     }
 
@@ -107,8 +127,9 @@ void process_command(const char *cmd) {
 
         if(mbx_multi_request(tags, 2) == 0) {
             uart_printf("Temp: %dC\n", tags[0].data[1]/1000);
+            printf("Temp: %dC\n", tags[0].data[1]/1000);
         }
-        get_prompt();
+       
     }
 
     
@@ -116,68 +137,66 @@ void process_command(const char *cmd) {
     else if (strcmp(cmd, "GetBoardRevision") == 0){
          if(mbx_multi_request(tags, 2) == 0) {
             uart_printf("Board Revision no: %x\n", tags[1].data[0]);
+            printf("Board Revision no: %x\n", tags[1].data[0]);
         }
-        get_prompt();
+       
     }
 
-    else if (strcmp(cmd, "VdoInit") == 0){
-        if (!video_inited) {
-            video_init();
-         } else {
-            uart_printf(ANSI_YELLOW"[KERNEL]: Video driver already initialied! Re-using pre-allocated one!\n" ANSI_RESET);
-         }
-
-         if (!video_info.virtual_address){
-            uart_printf(ANSI_RED"[KERNEL]: Video initialization failed earlier!\n"ANSI_RESET);
-            get_prompt();
-            return;
-         }
-
-         draw_string(60, 60, "Hello from grapesOS!", 0x00FFFFFF);
-
-         get_prompt();
-    
-    }
 
     else if (strcmp(cmd, "DrawLogo") == 0){
         if(!video_inited){
             uart_printf(ANSI_RED"[KERNEL]: Cannot draw; video driver not intialized! Run 'VdoInit' first!\n"ANSI_RESET);
-            get_prompt();
+            
         } else{
             draw_Logo(100, 100);
         }
-        get_prompt();
+        ;
+    }
+
+    else if (strcmp(cmd, "EndSession") == 0){
+        uart_printf(ANSI_YELLOW"[KERNEL]: Ending grapesOS session. Just pull the plug bru.\n");
+        printf(TXT_RED"[KERNEL]: Ending grapesOS session.\n"TXT_REST);
+        while(1);
+    }
+
+    else if(strcmp(cmd, "Shutdown") == 0){
+        uart_printf(ANSI_YELLOW"[KERNEL]: Shutting down all processes and putting system in idle mode. Just reset the device to restart.\n" ANSI_RESET);
+        printf(TXT_RED"[KERNEL]: Ending grapesOS session.\n"TXT_REST);
+        //disable interrupts
+        disable_irq();
+        
+        while(1){
+            asm volatile("wfi");  
+        }
     }
 
     else if (strcmp(cmd, "StartVdoEcho") == 0){
         if(!video_inited){
             uart_printf(ANSI_RED"[KERNEL]: Cannot echo; video driver not intialized! Run 'VdoInit' first!\n"ANSI_RESET);
-            get_prompt();
+          
         } else{
             uart_printf("Print to screen started. Press 'ESC' key to exit and return to kernel.\n");
-            int x = 50, y = 50;
-            char c;
-            while (1){
-                c = uart_recv();
-                if (c == '\r' || c == '\n'){
-                    draw_string(x, y, "\n", 0x00FFFFFF);
-                }
-                if (c == 27) {
-                    uart_printf("\nExiting Echo mode.\n");
+            printf(TXT_RED"Print to screen started. Press 'ESC' key to exit and return to kernel.\n"TXT_REST);
+            while(1){
+                char c = uart_recv();
+                if (c == 27){   //ASCII value of ESC key is 27
+                    uart_printf("Exiting echo mode and returning to kernel.\n");
+                    printf("Exiting echo mode and returning to kernel.\n");
                     break;
                 }
-                draw_char(x, y, c, 0x00FFFFFF);
-                x += FONT_W;     //moving the char to next position
+                printf("%c", c);
             }
-            get_prompt();
+            
+           
         }
     }
 
 
    //Unknown command handler
     else{
-        uart_send_string(ANSI_RED "Unknown command!\n" ANSI_RESET);
-        get_prompt();
+        uart_send_string(ANSI_RED "[KERNEL]:Unknown command!\n" ANSI_RESET);
+        printf(TXT_RED"Unknown command!\n"TXT_REST);
+        
     }
         
 }
@@ -185,48 +204,77 @@ void process_command(const char *cmd) {
 //MAIN KERNEL FUNCTION!
 void kernel_main() {
 
-    //initialize UART
+    // initialize UART
     uart_init();
+
+    // initialize video if needed
+    if (!video_inited) {
+        video_init();
+    } else {
+        uart_printf(ANSI_YELLOW "[KERNEL]: Video driver already initialied! Re-using pre-allocated one!\n" ANSI_RESET);
+    }
+
+    // ensure framebuffer is valid
+    if (!video_info.virtual_address) {
+        uart_printf(ANSI_RED "[KERNEL]: Video initialization failed earlier! Falling back to UART-only.\n" ANSI_RESET);
+        
+        // continue using UART-only input loop below
+    } else {
+        // Initialize and clear on-screen terminal
+        terminal_init();
+        terminal_clr();
+
+        // optional: draw logo on screen
+        draw_Logo(100, 100);
+    }
+
+    // keep serial logs
     uart_send_string(ANSI_GREEN "Hello from grapesOS! Running on UART.\n" ANSI_RESET);
     uart_send_string(ANSI_GREEN "System is now running in 64 bit mode.\n" ANSI_RESET);
     uart_send_string(ANSI_GREEN "Type 'help' for available commands.\n" ANSI_RESET);
 
-    
+    // show prompt on both UART and display
+    get_prompt();
 
+    // simple input loop - reads from UART and echoes to display
     char buffer[100];
     int idx = 0;
 
 
-     //check CPU temp and issue return a warning if too high
-    /*
-    u32 max_temp = 0;
-    mailbox_generic_command(RPI_FIRMWARE_GET_MAX_TEMPERATURE, 0, &max_temp);
-    u32 cur_temp = 0;
-    mailbox_generic_command(RPI_FIRMWARE_GET_TEMPERATURE, 0, &cur_temp);
-    if (cur_temp > max_temp){
-        uart_printf(ANSI_RED "WARNING! Your CPU is overheating; Please shutdown your device and let it cool, or attach a CPU cooler!\n" ANSI_RESET);
-    }
-    uart_send_string(ANSI_RED "All good till here three!\n" ANSI_RESET);
-    */
-   
-
-    get_prompt();
-    //MAIN KERNEL LOOP CODE
-    while(1){
-        
-        //set up basic command processor for UART
-          //print the prompt so that user can enter commands
-        char c = uart_recv();
-        uart_send(c);  //echo the character back
-
-        if (c == '\r' || c == '\n') {       //detect enter key press (as UART returns these characters when enter is pressed)
-            buffer[idx] = '\0';             //null-terminate the string so that C doesnt spend time reading the string infinitely
-            process_command(buffer);        //return the command to the process_command function so that we can generate the output
-            //uart_printf("DEBUG: process_command() entered with cmd=%s\n", buffer);
-            idx = 0;                        //reset the character index for the next commadn input!
+    while (1) {
+        if (!uart_data_ready()){
+            continue;
         }
-        else if (idx < sizeof(buffer) -1){      //this detects if we pressed enter key or not, if not, then we store the character into the buffer!
+
+        char c = uart_recv_nb();
+        uart_send(c);
+        // handle Enter
+        if (c == '\r' || c == '\n') {
+            // show newline on display once
+            terminal_putc('\n');
+
+            buffer[idx] = '\0';
+            if (idx > 0) {
+                process_command(buffer);
+            }
+            idx = 0;
+            get_prompt();            // reprint prompt after command handled
+            continue;
+        }
+
+        // backspace
+        if (c == '\b' || (unsigned char)c == 127) {
+            if (idx > 0) {
+                idx--;
+                terminal_putc('\b'); // terminal clears the glyph cell
+            }
+            continue;
+        }
+
+        // printable characters
+        if ((unsigned char)c >= 32 && idx < (int)sizeof(buffer) - 1) {
             buffer[idx++] = c;
+            terminal_putc(c);       // echo typed char to screen
         }
     }
 }

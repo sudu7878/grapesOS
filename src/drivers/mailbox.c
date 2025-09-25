@@ -95,7 +95,7 @@ int mbx_write(u32 channel, u32 data){
 
     
     if (data & 0xF){
-        uart_printf(ANSI_RED"Mailbox write data is not 16-byte aligned!"ANSI_RESET);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Mailbox write data is not 16-byte aligned!"ANSI_RESET);
         return -1;  //Failed; not aligned properly.
     }
     int t = 100000;
@@ -165,16 +165,16 @@ u32 mbx_request(u32 tag, u32 value_size, u32 response_size, u32 value) {
     u32 bus = ARM_TO_BUS_ADDR((u32)(uintptr_t)mbox_buffer);
 
     if(mbx_write(MAIL_TAGS, bus) != 0) {
-        uart_printf(ANSI_RED"Failed to write to mailbox.\n" ANSI_RESET);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Failed to write to mailbox.\n" ANSI_RESET);
         return 0xFFFFFFFF;
     }
     if(mbx_wait_response(MAIL_TAGS, bus) != 0) {
-        uart_printf(ANSI_RED"Failed to get mailbox response.\n" ANSI_RESET);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Failed to get mailbox response.\n" ANSI_RESET);
         return 0xFFFFFFF0;
     }
 
     if (mbox_buffer[1] != 0x80000000) {
-        uart_printf(ANSI_RED"Firmware status: 0x%x\n" ANSI_RESET, mbox_buffer[1]);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Firmware status: 0x%x\n" ANSI_RESET, mbox_buffer[1]);
         return 0xFFFFFFFF;
     }
 
@@ -208,11 +208,11 @@ int mbx_multi_request(mbx_tag_t *tags, int num_tags) {
     u32 bus = ARM_TO_BUS_ADDR((u32)(uintptr_t)mbox_buffer);
 
     if (mbx_write(MAIL_TAGS, bus) != 0) {
-        uart_printf(ANSI_RED"Failed to write to the mailbox!\n"ANSI_RESET);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Failed to write to the mailbox!\n"ANSI_RESET);
         return -1;
     }
     if (mbx_wait_response(MAIL_TAGS, bus) != 0){
-        uart_printf(ANSI_RED"Failed to get the mailbox response!\n"ANSI_RED);
+        uart_printf(ANSI_RED"[MAILBOX_INTRF]: Failed to get the mailbox response!\n"ANSI_RED);
         return -1;
     }
 

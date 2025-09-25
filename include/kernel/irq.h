@@ -8,3 +8,4 @@ void irq_disable();
 
 
 void enable_interrupt_controller();
+void disable_irq();

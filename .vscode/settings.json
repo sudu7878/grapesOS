@@ -36,6 +36,11 @@
         "array": "c",
         "vector": "c",
         "xstring": "c",
-        "video_driver.h": "c"
+        "video_driver.h": "c",
+        "xiosbase": "c",
+        "entry.h": "c",
+        "stdarg.h": "c",
+        "text_rend.h": "c",
+        "terminal.h": "c"
     }
 }

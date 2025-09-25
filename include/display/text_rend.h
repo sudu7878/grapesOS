@@ -11,7 +11,7 @@
 
 
 void text_init(u32 fg_color, u32 bg_color);
-void draw_char(int x, int y, char c, u32 color);
+void draw_char(int x, int y, char c, u32 color, int size);
 void draw_string(int x, int y, const char *s, u32 color);
 void draw_Logo(int x0, int y0);
 
@@ -19,8 +19,8 @@ void term_init(void);
 void term_putc(char c);
 void term_puts(const char *s);
 
-
-
+extern int cursor_x;
+extern int cursor_y;
 
 
 #endif

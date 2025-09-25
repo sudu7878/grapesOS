@@ -15,8 +15,9 @@
 static u32 fg_color = 0x00FFFFFF;    //white
 static u32 bg_color = 0x00000000;   //black default
 
-static int cursor_x = 0;
-static int cursor_y = 0;
+int cursor_x = 0;
+int size = 80;
+int cursor_y = 0;
 
 #define CLAMP_MIN(a,b) ((a) < (b)) ? (b) : (a)
 
@@ -151,16 +152,18 @@ static unsigned char FontBasic[128][8] = {
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}    // U+007F
 };
 
-void draw_char(int x, int y, char c, uint32_t color){
+void draw_char(int x, int y, char c, u32 color, int size){
     if (c < 0 || c > 127) return;   //breaking out since no valid chars
 
     for (int row = 0; row < FONT_H; row++){
-        unsigned char row_data = FontBasic[(int)c][row];
+        unsigned char  row_data = FontBasic[(int)c][row];
         for (int col = 0; col < FONT_W; col++){
-            if (row_data & (1 << col)){
-                video_draw_px(x + col, y + row, fg_color);
-            } else {
-                video_draw_px(x +col, y + row, bg_color);
+            u32 px_color = (row_data & (1 <<col)) ? color : bg_color;
+
+            for(int dy = 0; dy < size; dy++) {
+                for (int dx = 0; dx < size; dx++){
+                    video_draw_px(x + col * size + dx, y + row*size+dy, px_color);
+                }
             }
         }
     }
@@ -168,7 +171,7 @@ void draw_char(int x, int y, char c, uint32_t color){
 
 void draw_string(int x, int y, const char *str, uint32_t color){
     while(*str){
-        draw_char(x, y, *str, color);
+        draw_char(x, y, *str, color, size);
         x += 8;
         str++;
     }
@@ -179,7 +182,7 @@ void term_putc(char c){
         cursor_x = 0;
         cursor_y += 8;
     } else {
-        draw_char(cursor_x, cursor_y, c, fg_color);
+        draw_char(cursor_x, cursor_y, c, fg_color,size);
         cursor_x += 8;
         if (cursor_x >= video_info.width){
             cursor_x = 0;

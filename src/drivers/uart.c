@@ -11,6 +11,23 @@
 #define TXD 14      //define GPIO 14 or pin 8 as TX (for transmitting)
 #define RXD 15      //define GPIO 15 or pin 10 as RX (for recieving)
 
+#define RX_BUF_SIZE 256
+static volatile unsigned int rx_head = 0, rx_tail = 0;
+static volatile char rx_buf[RX_BUF_SIZE];
+
+void uart_push_rx(char c){
+    unsigned int next_head = (rx_head + 1)%RX_BUF_SIZE;
+    if (next_head == rx_tail){
+        return;
+    }
+    rx_buf[rx_head] = c;
+    rx_head = next_head;
+}
+
+int uart_rb_data_ready(void){
+    return rx_head != rx_tail;
+}
+
 void uart_init() {
     gpio_pin_set_func(TXD, GFAlt5);
     gpio_pin_set_func(RXD, GFAlt5);
@@ -40,6 +57,18 @@ void uart_init() {
     uart_send('\n');
 }
 
+int uart_data_ready(void){
+    return (REGS_AUX->mu_lsr & 0x01) ? 1: 0;
+}
+
+char uart_recv_nb(void){
+    if (uart_data_ready()){
+        return REGS_AUX->mu_io & 0xFF;
+    } else {
+        return -1;  // Indicate no data available
+    }
+}
+
 void uart_send(char c) {                            //send basic characters
     while(!(REGS_AUX->mu_lsr & 0x20));
 
@@ -47,9 +76,8 @@ void uart_send(char c) {                            //send basic characters
 }
 
 char uart_recv() {                                  //recieve basic characters
-    while(!(REGS_AUX->mu_lsr & 1));
-
-    return REGS_AUX->mu_io & 0xFF;
+    while (!uart_data_ready()){}
+    return uart_recv_nb();
 }
 
 void uart_send_string(char *str) {                  //send strings of characters    
@@ -116,6 +144,9 @@ void uart_printf(const char *fmt, ...){                 //formatted print functi
     va_start(args, fmt);
 
     while(*fmt) {
+        if(*fmt == '\n'){
+           uart_send('\r');
+        }
         if(*fmt == '%'){
             fmt++;  // move past '%'
 

@@ -20,6 +20,8 @@ OBJ = \
   $(BUILD)/bgudakrnl.o \
   $(BUILD)/gpio.o \
   $(BUILD)/uart.o \
+  $(BUILD)/memcpy.o \
+  $(BUILD)/terminal.o\
   $(BUILD)/text_rend.o\
   $(BUILD)/irq.o \
   $(BUILD)/irq_S.o \
@@ -77,7 +79,7 @@ $(BUILD)/video_driver.o: $(SRC)/drivers/video_driver.c | $(BUILD)
 $(BUILD)/irq_S.o: $(SRC)/aarch/irq.S | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
-$(BUILD)/printf.o: $(SRC)/printf.c | $(BUILD)
+$(BUILD)/printf.o: $(SRC)/lib/printf.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/entry.o: $(SRC)/aarch/entry.S | $(BUILD)
@@ -87,6 +89,12 @@ $(BUILD)/mailbox.o: $(SRC)/drivers/mailbox.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/text_rend.o: $(SRC)/display/text_rend.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
+
+$(BUILD)/terminal.o: $(SRC)/kernel/terminal.c | $(BUILD)
+	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
+
+$(BUILD)/memcpy.o: $(SRC)/lib/memcpy.c | $(BUILD)
 	$(CC) -c -mcpu=cortex-a72 -march=armv8-a -O2 -Wall -nostdlib -nostartfiles -ffreestanding -I$(INCLUDE) -o $@ $<
 
 $(BUILD)/bgudakrnl.o: $(SRC)/kernel/bgudakrnl.c | $(BUILD)

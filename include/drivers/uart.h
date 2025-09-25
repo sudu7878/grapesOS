@@ -39,7 +39,13 @@ void uart_send_int(int num);                //this thing here returns integers
 
 void uart_send_hex(unsigned int num);       //this thing here returns hexadecimals
 
+void uart_push_rx(char c);
 
+
+int uart_data_ready(void);
+int uart_rb_data_ready(void);
+char uart_recv_nb(void);
+char uart_recv(void);
 
 //UART fucntion to recieve data
 
