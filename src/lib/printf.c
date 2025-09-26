@@ -53,18 +53,15 @@ void screen_putc(char c){
     int cw = char_width_px();
     int lh = line_height_px();
 
-    if (c == '\r') {
+    if (c == '\r' || c == '\n'){
         cursor_x = 0;
-        return;
-    }
-
-    if (c == '\n') {
-        cursor_x = 0;
-        cursor_y += lh;
-        if (cursor_y + lh > (int)video_info.height) {
-            scroll_up_pixels(lh);
-            cursor_y -= lh;
-            if (cursor_y < 0) cursor_y = 0;
+        if (c == '\n'){
+            cursor_y += lh;
+            if(cursor_y + lh > (int)video_info.height){
+                scroll_up_pixels(lh);
+                cursor_y -= lh;
+                if(cursor_y < 0) cursor_y = 0; 
+            }
         }
         return;
     }

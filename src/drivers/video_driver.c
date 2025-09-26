@@ -2,6 +2,9 @@
 #include "drivers/mailbox.h"
 #include "drivers/uart.h"
 #include "lib/utils.h"
+#include "lib/printf.h"
+#include "display/text_rend.h"
+#include "kernel/terminal.h"
 #include <stddef.h>
 #include "common.h"
 
@@ -9,6 +12,8 @@
 video_info_t video_info = {0};
 
 bool video_inited = false;
+u32 scrn_w = 0;
+u32 scrn_h = 0;
 
 #define BUS_TO_PHYSS(addr) ((addr) & ~0xC0000000)
 
@@ -37,12 +42,12 @@ void video_init(void) {
 
     if (video_inited){
         uart_printf(ANSI_YELLOW"[VIDEO_DRIVER]: Video drivers are already initialized.\n"ANSI_RESET);
+        terminal_puts("\n");
+        printf(TXT_YELLOW"[VIDEO_DRIVER]: Video drivers are already initialized!");
         return;
 
     }
             video_inited = true;
-
-            u32 scrn_w, scrn_h;
             get_display_res(&scrn_w, &scrn_h);
             video_info.width = scrn_w;
             video_info.height = scrn_h;
@@ -126,3 +131,6 @@ void video_init(void) {
                 }
             }
         }
+
+    
+    

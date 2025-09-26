@@ -202,6 +202,9 @@ void draw_Logo(int x0, int y0){
     unsigned int w = grapesLogo.width;
     unsigned int h = grapesLogo.height;
 
+    x0 = (scrn_w - w)/2;
+    y0 = (scrn_h - h)/2;
+
     for(unsigned int y = 0; y < h; y++){
         for (unsigned int x = 0; x < w; x++){
             unsigned int idx = (y * w +x) *2;
@@ -220,3 +223,51 @@ void draw_Logo(int x0, int y0){
         }
     }
 }
+
+/*void draw_Logo_centered_alpha(uint8_t alpha_percent) {
+    if (!video_info.virtual_address) return;
+
+    const unsigned char *px = grapesLogo.pixel_data;
+    unsigned int logo_w = 200;
+    unsigned int logo_h = 200;
+
+    
+    int x0 = (video_info.width - logo_w) / 2;
+    int y0 = (video_info.height - logo_h) / 2;
+
+    for (unsigned int y = 0; y < logo_h; y++) {
+        for (unsigned int x = 0; x < logo_w; x++) {
+            unsigned int src_x = x * grapesLogo.width / logo_w;
+            unsigned int src_y = y * grapesLogo.height / logo_h;
+            unsigned int idx = (src_y * grapesLogo.width + src_x) * 2;
+
+            uint16_t px16 = (px[idx + 1] << 8) | px[idx];
+
+            // RGB565 ->24-bit RGB
+            uint8_t r = (px16 >> 11) & 0x1F;
+            uint8_t g = (px16 >> 5) & 0x3F;
+            uint8_t b = px16 & 0x1F;
+            r = (r * 255) / 31;
+            g = (g * 255) / 63;
+            b = (b * 255) / 31;
+
+            // get existing pixel
+            uint32_t old = video_get_px(x0 + x, y0 + y);
+            uint8_t old_r = (old >> 16) & 0xFF;
+            uint8_t old_g = (old >> 8) & 0xFF;
+            uint8_t old_b = old & 0xFF;
+
+            // alpha blending
+            float alpha = alpha_percent / 100.0f;
+            uint8_t final_r = r * alpha + old_r * (1.0f - alpha);
+            uint8_t final_g = g * alpha + old_g * (1.0f - alpha);
+            uint8_t final_b = b * alpha + old_b * (1.0f - alpha);
+
+            uint32_t color = (final_r << 16) | (final_g << 8) | final_b;
+            video_draw_px(x0 + x, y0 + y, color);
+        }
+    }
+}
+    
+DOESNT WORK FOR NOW (SAD)
+*/

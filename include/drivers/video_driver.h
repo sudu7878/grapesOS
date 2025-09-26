@@ -21,9 +21,13 @@ void video_init(void);
 
 extern video_info_t video_info;
 
+extern u32 scrn_w;
+extern u32 scrn_h;
+
 extern bool video_inited;
 
 void video_draw_px(u32 x, u32 y, u32 color);
+u32 video_get_px(int x, int y);
 
 void video_fill_screen(u32 color);
 
