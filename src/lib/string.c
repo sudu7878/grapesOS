@@ -1,5 +1,7 @@
 //src/lib/string.c
 
+//a simple function to compare two strings and arrive at a branch.
+
 #include "lib/string.h"
 
 int strcmp(const char *s1, const char *s2){

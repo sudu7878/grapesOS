@@ -25,7 +25,7 @@ static inline int line_height_px(void){
     return (FONT_H * txt_size) + vert_spacing;
 }
 
-/* simple scroll-up by pixel rows; uses project's memcpy (no libc) */
+ // a simple scroll logic NOTE: it uses custom memcpy function, not the inbuilt C one.
 static void scroll_up_pixels(int pixels) {
     if (!video_info.virtual_address || pixels <= 0) return;
     u32 pitch = video_info.pitch;
@@ -37,13 +37,13 @@ static void scroll_up_pixels(int pixels) {
     u32 dst_off = 0;
     u32 copy_bytes = (height * pitch) - src_off;
 
-    /* safe forward copy (dst < src) */
+    
     memcpy(buf + dst_off, buf + src_off, copy_bytes);
 
-    /* clear bottom area to bg_color */
+     
     for (u32 yy = height - (u32)pixels; yy < height; yy++) {
         for (u32 xx = 0; xx < width; xx++) {
-            /* video_draw_px is used elsewhere; use it to honor pixel format */
+            
             video_draw_px((int)xx, (int)yy, bg_color);
         }
     }
@@ -66,11 +66,11 @@ void screen_putc(char c){
         return;
     }
 
-    /* printable */
+     
     draw_char(cursor_x, cursor_y, c, fg_color, txt_size);
     cursor_x += cw;
 
-    /* wrap when we don't have space for another glyph */
+   //warping if we dont have enough space
     if (cursor_x + cw > (int)video_info.width) {
         cursor_x = 0;
         cursor_y += lh;
@@ -89,8 +89,7 @@ void screen_puts(const char *str){
 }
 
 void printf(const char *fmt, ...){
-    /* start each printf with a sensible default text size so previous calls
-       cannot leave the renderer stuck in a large/small glyph mode */
+     
     txt_size = 2;
      va_list args;
      va_start(args, fmt);

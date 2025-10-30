@@ -2,7 +2,9 @@
 
 //The mailbox driver API is used to communicate with the VideoCore GPU on the Raspberry Pi.
 
-/*
+/*  
+    Personally, I took a lot of time to understand mailbox, so I'm 'flushing' out my brain's RAM to the disk (pun intended)
+
     If you wish to understand this code, then you need to look at the GPU as a literal person, and you 
     as a user asking stuff to it. All of the functions are named in third person view; i.e, mbx_read() 
     is nothing but YOU reading the value returned by the GPU, not that its a function for GPU to read 
@@ -60,7 +62,7 @@
 #include <stdbool.h>
 
 
-//Mailbox channels. Note that these are constants, meaning it's pre-determined.
+//Mailbox channels. Note that these are constants, meaning it's pre-determined. Referred from documentation
 #define MAIL_POWER    0x0 // Mailbox Channel 0: Power Management Interface
 #define MAIL_FB       0x1 // Mailbox Channel 1: Frame Buffer
 #define MAIL_VUART    0x2 // Mailbox Channel 2: Virtual UART

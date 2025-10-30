@@ -1,5 +1,7 @@
 //include/drivers/timer.h
 
+//This timer is absed on the CPU clock speed.
+
 #include "printf.h"
 #include "drivers/timer.h"
 #include "drivers/gpio_hedr.h"

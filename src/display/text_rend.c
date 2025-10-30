@@ -1,5 +1,7 @@
 // src/display/text_rend.c
 
+//Contains character bitmaps library
+
 #include "display/text_rend.h"
 #include "drivers/video_driver.h"
 #include "drivers/uart.h"

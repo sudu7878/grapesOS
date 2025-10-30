@@ -1,6 +1,6 @@
 // src/drivers/gpio.c
 
-//gpio controller
+//General purpose Input Output controller fro Raspberry Pi Hardware.
 
 #include "drivers/gpio_hedr.h"
 #include "drivers/gpio.h"

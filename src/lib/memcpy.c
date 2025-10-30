@@ -1,5 +1,7 @@
 //src/lib/memcpy.c
 
+//custom memory copy function
+
 #include "lib/memcpy.h"
 
 
